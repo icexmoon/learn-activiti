@@ -38,7 +38,7 @@ public class ApplicationTests {
         Deployment deploy = repositoryService.createDeployment()
                 .name("出差申请")
                 .addClasspathResource("bpmn/test.bpmn20.xml")
-                .addClasspathResource("bpmn/test.bpmn20.png")
+                .addClasspathResource("bpmn/test.png")
                 .deploy();
         System.out.println(deploy.getId());
     }
