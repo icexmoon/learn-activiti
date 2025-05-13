@@ -2,6 +2,7 @@ package cn.icexmoon.demo;
 
 import org.activiti.engine.*;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.junit.Test;
@@ -97,12 +98,32 @@ public class ApplicationTests {
      * 用 zip 包完成多个流程的部署
      */
     @Test
-    public void testDeployProcessByZip(){
+    public void testDeployProcessByZip() {
         RepositoryService repositoryService = processEngine.getRepositoryService();
         InputStream inputStream = this.getClass().getResourceAsStream("/bpmn/processes.zip");
         ZipInputStream zipInputStream = new ZipInputStream(inputStream);
         repositoryService.createDeployment()
                 .addZipInputStream(zipInputStream)
                 .deploy();
+    }
+
+    /**
+     * 获取指定流程定义
+     */
+    @Test
+    public void testQueryProcessDefinitionList() {
+        final String PROCESS_DEFINITION_KEY = "test"; // 流程定义的 key
+        RepositoryService repositoryService = processEngine.getRepositoryService();
+        List<ProcessDefinition> definitionList = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionKey(PROCESS_DEFINITION_KEY) // 只查询指定 key 的流程定义
+                .orderByProcessDefinitionVersion().desc() // 结果按照版本降序排列
+                .list();
+        for (ProcessDefinition processDefinition : definitionList) {
+            // 打印单条流程定义信息
+            System.out.printf("ID：%s，名称：%s，版本：%d%n",
+                    processDefinition.getId(),
+                    processDefinition.getName(),
+                    processDefinition.getVersion());
+        }
     }
 }
