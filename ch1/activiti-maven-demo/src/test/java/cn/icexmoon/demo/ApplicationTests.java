@@ -1,12 +1,14 @@
 package cn.icexmoon.demo;
 
-import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.ProcessEngines;
-import org.activiti.engine.RepositoryService;
-import org.activiti.engine.RuntimeService;
+import org.activiti.engine.*;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
 import org.junit.Test;
+
+import java.io.InputStream;
+import java.util.List;
+import java.util.zip.ZipInputStream;
 
 /**
  * Created with IntelliJ IDEA.
@@ -47,5 +49,60 @@ public class ApplicationTests {
         System.out.println("流程实例id:" + instance.getId());
         System.out.println("流程定义id:" + instance.getProcessDefinitionId());
         System.out.println("当前活动id:" + instance.getActivityId());
+    }
+
+    /**
+     * 获取指定用户某个流程定义的待处理任务列表
+     */
+    @Test
+    public void testUserTaskList() {
+        final String PROCESS_DEFINE_KEY = "test";
+        final String USER_ID = "Jack";
+        TaskService taskService = processEngine.getTaskService();
+        List<Task> tasks = taskService.createTaskQuery()
+                .processDefinitionKey(PROCESS_DEFINE_KEY)
+                .taskAssignee(USER_ID)
+                .list();
+        for (Task task : tasks) {
+            System.out.println("流程实例id" + task.getProcessInstanceId());
+            System.out.println("任务id" + task.getId());
+            System.out.println("任务负责人" + task.getAssignee());
+            System.out.println("任务名称" + task.getName());
+        }
+    }
+
+    @Test
+    public void testCompleteTask() {
+        final String TASK_ID = "2505";
+        TaskService taskService = processEngine.getTaskService();
+        taskService.complete(TASK_ID);
+    }
+
+    @Test
+    public void testProcessInstanceFinish() {
+        TaskService taskService = processEngine.getTaskService();
+        // 剩余的待审批人
+        final List<String> userIds = List.of("Tom", "Brus", "Jerry");
+        // 遍历审批人，完成审批动作
+        for (String userId : userIds) {
+            Task task = taskService.createTaskQuery()
+                    .processDefinitionKey("test") // 查询 test 审批流实例
+                    .taskAssignee(userId) // 当前审批人
+                    .singleResult();// 示例中每个审批人只有1个待审批流程
+            taskService.complete(task.getId()); // 完成审批
+        }
+    }
+
+    /**
+     * 用 zip 包完成多个流程的部署
+     */
+    @Test
+    public void testDeployProcessByZip(){
+        RepositoryService repositoryService = processEngine.getRepositoryService();
+        InputStream inputStream = this.getClass().getResourceAsStream("/bpmn/processes.zip");
+        ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+        repositoryService.createDeployment()
+                .addZipInputStream(zipInputStream)
+                .deploy();
     }
 }
