@@ -85,14 +85,14 @@ public class ActivitiUtils {
     /**
      * 启动一个流程实例，并且自动完成第一个任务
      *
-     * @param PROCESS_DEFINITION_KEY 流程定义key
+     * @param processDefinitionKey 流程定义key
      * @param variables              流程变量
      * @return 流程实例id
      */
-    public String startAndNext(final String PROCESS_DEFINITION_KEY, Map<String, Object> variables) {
+    public String startAndNext(final String processDefinitionKey, Map<String, Object> variables) {
         RuntimeService runtimeService = processEngine.getRuntimeService();
         ProcessInstance instance = runtimeService.startProcessInstanceByKey(
-                PROCESS_DEFINITION_KEY,
+                processDefinitionKey,
                 variables);
         Task lastTask = getLastTask(instance.getId());
         processEngine.getTaskService().complete(lastTask.getId());
@@ -244,6 +244,7 @@ public class ActivitiUtils {
         for (Task task : tasks) {
             log.info(String.format("任务ID(%s)，任务名称(%s)，委托人(%s)", task.getId(), task.getName(), task.getAssignee()));
         }
+        log.info("=====================================");
     }
 
     /**
