@@ -25,7 +25,8 @@
     </userTask>
     <sequenceFlow id="sid-758a4f06-5c9a-4000-a485-880e52640e79" sourceRef="sid-1a3257e9-11a1-42c7-8b90-a21c25263056" targetRef="sid-4a631c9a-f797-44a8-8676-e3ccdf9daea7"/>
     <sequenceFlow id="sid-8a22bfcc-152f-4486-9796-2026994d8ae8" sourceRef="sid-1ec6602e-30f5-4c22-807f-51130c44a205" targetRef="sid-4a631c9a-f797-44a8-8676-e3ccdf9daea7" name="出差时间小于3天">
-      <conditionExpression>${form.days&lt;=3}</conditionExpression>
+      <!-- 这里故意将条件设置错误，没有包含等于3的情况 -->
+      <conditionExpression>${form.days&lt;3}</conditionExpression>
     </sequenceFlow>
     <endEvent id="sid-13fb6b9d-2bda-4a57-8656-7a8b59815f70"/>
     <sequenceFlow id="sid-25f55e9a-d92e-420d-8705-c84f9b3640be" sourceRef="sid-4a631c9a-f797-44a8-8676-e3ccdf9daea7" targetRef="sid-13fb6b9d-2bda-4a57-8656-7a8b59815f70"/>

@@ -1,5 +1,7 @@
 package cn.icexmoon.demo.util;
 
+import cn.icexmoon.demo.dto.BaseForm;
+import lombok.extern.log4j.Log4j;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RuntimeService;
@@ -23,6 +25,7 @@ import java.util.*;
  * @Website : https://icexmoon.cn
  * @Description : Activiti 工具类
  */
+@Log4j
 public class ActivitiUtils {
     private final ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
 
@@ -84,14 +87,29 @@ public class ActivitiUtils {
      *
      * @param PROCESS_DEFINITION_KEY 流程定义key
      * @param variables              流程变量
+     * @return 流程实例id
      */
-    public void startAndNext(final String PROCESS_DEFINITION_KEY, Map<String, Object> variables) {
+    public String startAndNext(final String PROCESS_DEFINITION_KEY, Map<String, Object> variables) {
         RuntimeService runtimeService = processEngine.getRuntimeService();
         ProcessInstance instance = runtimeService.startProcessInstanceByKey(
                 PROCESS_DEFINITION_KEY,
                 variables);
         Task lastTask = getLastTask(instance.getId());
         processEngine.getTaskService().complete(lastTask.getId());
+        return instance.getId();
+    }
+
+    /**
+     * 启动一个流程实例，并自动完成第一个任务
+     *
+     * @param processDefinitionKey 流程定义key
+     * @param baseForm             表单数据
+     * @return 流程实例id
+     */
+    public String startAndNext(String processDefinitionKey, BaseForm baseForm) {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("form", baseForm);
+        return startAndNext(processDefinitionKey, variables);
     }
 
     /**
@@ -190,5 +208,91 @@ public class ActivitiUtils {
             return null;
         }
         return candidates.get(0);
+    }
+
+    /**
+     * 推动流程实例到下个活动
+     *
+     * @param processInstanceId 流程实例id
+     */
+    public void nextActivity(String processInstanceId) {
+        Task lastTask = this.getLastTask(processInstanceId);
+        String executor = this.getTaskExecutor(lastTask.getId());
+        this.completeTaskWithCheck(executor, lastTask.getId());
+    }
+
+    /**
+     * 返回当前进程实例的任务列表
+     *
+     * @param processInstanceId 进程实例id
+     * @return 任务列表
+     */
+    public List<Task> listCurrentTasks(String processInstanceId) {
+        return processEngine.getTaskService().createTaskQuery()
+                .processInstanceId(processInstanceId)
+                .list();
+    }
+
+    /**
+     * 打印进程实例的当前任务
+     *
+     * @param processInstanceId 进程实例id
+     */
+    public void printCurrentTasks(String processInstanceId) {
+        List<Task> tasks = listCurrentTasks(processInstanceId);
+        log.info(String.format("============进程实例（%s）============", processInstanceId));
+        for (Task task : tasks) {
+            log.info(String.format("任务ID(%s)，任务名称(%s)，委托人(%s)", task.getId(), task.getName(), task.getAssignee()));
+        }
+    }
+
+    /**
+     * 是否当前任务
+     *
+     * @param processInstanceId 进程实例id
+     * @param taskName          任务名称
+     * @return 是否当前任务
+     */
+    public boolean isCurrentTask(String processInstanceId, String taskName) {
+        Task currentTask = getCurrentTask(processInstanceId, taskName);
+        return currentTask != null;
+    }
+
+    /**
+     * 获取进程实例的一个当前任务
+     *
+     * @param processInstanceId 进程实例id
+     * @param taskName          任务名称
+     * @return
+     */
+    public Task getCurrentTask(String processInstanceId, String taskName) {
+        if (taskName == null) {
+            return null;
+        }
+        List<Task> tasks = listCurrentTasks(processInstanceId);
+        for (Task task : tasks) {
+            if (taskName.equals(task.getName())) {
+                return task;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 完成进程实例的指定任务
+     *
+     * @param processInstanceId 进程实例id
+     * @param taskName          任务名称
+     */
+    public void completeTask(String processInstanceId, String taskName) {
+        // 检查任务是否为当前任务
+        if (!isCurrentTask(processInstanceId, taskName)) {
+            throw new RuntimeException("任务（%s）不是进程实例（%s）的当前任务！".formatted(taskName, processInstanceId));
+        }
+        Task currentTask = getCurrentTask(processInstanceId, taskName);
+        if (currentTask == null){
+            throw new RuntimeException("进程实例没有找到与任务名称匹配的当前任务");
+        }
+        processEngine.getTaskService().complete(currentTask.getId());
     }
 }
