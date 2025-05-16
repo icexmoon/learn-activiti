@@ -2,8 +2,6 @@ package cn.icexmoon.demo.dto;
 
 import lombok.Data;
 
-import java.io.Serializable;
-
 /**
  * Created with IntelliJ IDEA.
  *
@@ -18,11 +16,11 @@ import java.io.Serializable;
  * @Description : 出差申请单
  */
 @Data
-public class TravelForm extends BaseForm implements Serializable {
+public class TravelForm extends BaseForm {
     // 出差时长（单位：天）
     private int days;
 
-    public TravelForm(String creator,int days) {
+    public TravelForm(String creator, int days) {
         super(creator);
         this.days = days;
     }

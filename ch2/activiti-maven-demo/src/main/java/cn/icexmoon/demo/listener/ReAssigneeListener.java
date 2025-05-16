@@ -1,8 +1,10 @@
 package cn.icexmoon.demo.listener;
 
+import cn.icexmoon.demo.dto.BaseForm;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
 
@@ -43,7 +45,8 @@ public class ReAssigneeListener implements TaskListener {
                     // 不做任何处理
             }
             if (assignee != null) {
-                delegateTask.setAssignee(assignee);
+                TaskService taskService = processEngine.getTaskService();
+                taskService.claim(delegateTask.getId(), assignee);
             }
         }
     }
@@ -67,7 +70,12 @@ public class ReAssigneeListener implements TaskListener {
         RuntimeService runtimeService = processEngine.getRuntimeService();
         String self = (String) runtimeService.getVariable(executionId, "self");
         if (self == null) {
-            throw new RuntimeException(String.format("执行id(%s)缺少变量self", executionId));
+            // 尝试通过表单信息获取流程发起人
+            BaseForm form = (BaseForm) runtimeService.getVariable(executionId, "form");
+            if (form == null){
+                throw new RuntimeException(String.format("执行id(%s)缺少变量self", executionId));
+            }
+            return form.getCreator();
         }
         return self;
     }

@@ -2,10 +2,23 @@
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef">
   <process id="travel-condition" name="出差申请v3" isExecutable="true">
     <startEvent id="sid-c3512e78-4083-44ed-aa0f-41d9a7a1d511"/>
-    <userTask id="sid-db4dd198-6147-4956-9d73-9f8129c5adec" name="创建出差申请" activiti:assignee="${form.creator}"/>
-    <userTask id="sid-28bb9c01-7626-40e3-ac71-4f37f5f071a0" name="经理审批"/>
-    <userTask id="sid-f8ab8b84-6148-4b69-bc11-020f488edffd" name="高级经理审批"/>
-    <userTask id="sid-2c0506f2-42ea-4bf3-ae19-8b6d8f8e130b" name="财务审批"/>
+    <userTask id="sid-db4dd198-6147-4956-9d73-9f8129c5adec" name="创建出差申请" activiti:assignee="${form.creator}">
+    </userTask>
+    <userTask id="sid-28bb9c01-7626-40e3-ac71-4f37f5f071a0" name="经理审批">
+      <extensionElements>
+        <activiti:taskListener event="create" class="cn.icexmoon.demo.listener.ReAssigneeListener"/>
+      </extensionElements>
+    </userTask>
+    <userTask id="sid-f8ab8b84-6148-4b69-bc11-020f488edffd" name="高级经理审批">
+      <extensionElements>
+        <activiti:taskListener event="create" class="cn.icexmoon.demo.listener.ReAssigneeListener"/>
+      </extensionElements>
+    </userTask>
+    <userTask id="sid-2c0506f2-42ea-4bf3-ae19-8b6d8f8e130b" name="财务审批">
+      <extensionElements>
+        <activiti:taskListener event="create" class="cn.icexmoon.demo.listener.ReAssigneeListener"/>
+      </extensionElements>
+    </userTask>
     <endEvent id="sid-c280c157-52e2-46cf-ae5f-75433b014305"/>
     <sequenceFlow id="sid-caa22748-97a4-480a-ac14-0ae6fbadd2aa" sourceRef="sid-c3512e78-4083-44ed-aa0f-41d9a7a1d511" targetRef="sid-db4dd198-6147-4956-9d73-9f8129c5adec"/>
     <sequenceFlow id="sid-c206cae5-de65-4383-b895-6a44a87cb6a1" sourceRef="sid-db4dd198-6147-4956-9d73-9f8129c5adec" targetRef="sid-28bb9c01-7626-40e3-ac71-4f37f5f071a0"/>

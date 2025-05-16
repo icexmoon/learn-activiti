@@ -2,6 +2,8 @@ package cn.icexmoon.demo.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -16,7 +18,7 @@ import lombok.Data;
  * @Description : 表单抽象基类
  */
 @Data
-public abstract class BaseForm {
+public abstract class BaseForm implements Serializable {
     private String creator; //表单发起人
 
     public BaseForm(String creator) {
