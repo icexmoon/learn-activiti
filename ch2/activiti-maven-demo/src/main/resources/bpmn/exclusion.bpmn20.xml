@@ -3,14 +3,26 @@
   <process id="exclustion" name="排它网关测试流程" isExecutable="true">
     <startEvent id="sid-1dd1d41b-5e5c-483b-aa26-40e82bb1174c"/>
     <userTask id="sid-1ca76ebd-2d46-4af0-958d-0f9e68a7a8d8" name="创建出差申请" activiti:assignee="${form.creator}"/>
-    <userTask id="sid-cf5ac933-4d3b-4440-8517-d80af899bc71" name="经理审批"/>
-    <userTask id="sid-1a3257e9-11a1-42c7-8b90-a21c25263056" name="高级经理审批"/>
+    <userTask id="sid-cf5ac933-4d3b-4440-8517-d80af899bc71" name="经理审批">
+      <extensionElements>
+        <activiti:taskListener event="create" class="cn.icexmoon.demo.listener.ReCandidateListener"/>
+      </extensionElements>
+    </userTask>
+    <userTask id="sid-1a3257e9-11a1-42c7-8b90-a21c25263056" name="高级经理审批">
+      <extensionElements>
+        <activiti:taskListener event="create" class="cn.icexmoon.demo.listener.ReCandidateListener"/>
+      </extensionElements>
+    </userTask>
     <sequenceFlow id="sid-bf8ac1e3-bea1-43ae-ad59-4d1694eebeeb" sourceRef="sid-1dd1d41b-5e5c-483b-aa26-40e82bb1174c" targetRef="sid-1ca76ebd-2d46-4af0-958d-0f9e68a7a8d8"/>
     <sequenceFlow id="sid-c2575965-f530-435e-9976-4ca613ed6dc5" sourceRef="sid-1ca76ebd-2d46-4af0-958d-0f9e68a7a8d8" targetRef="sid-cf5ac933-4d3b-4440-8517-d80af899bc71"/>
     <sequenceFlow id="sid-faf4de84-776c-4b9f-8ebe-eb17fb8e7dd3" sourceRef="sid-1ec6602e-30f5-4c22-807f-51130c44a205" targetRef="sid-1a3257e9-11a1-42c7-8b90-a21c25263056" name="出差时间大于3天">
       <conditionExpression>${form.days&gt;3}</conditionExpression>
     </sequenceFlow>
-    <userTask id="sid-4a631c9a-f797-44a8-8676-e3ccdf9daea7" name="财务审批"/>
+    <userTask id="sid-4a631c9a-f797-44a8-8676-e3ccdf9daea7" name="财务审批">
+      <extensionElements>
+        <activiti:taskListener event="create" class="cn.icexmoon.demo.listener.ReCandidateListener"/>
+      </extensionElements>
+    </userTask>
     <sequenceFlow id="sid-758a4f06-5c9a-4000-a485-880e52640e79" sourceRef="sid-1a3257e9-11a1-42c7-8b90-a21c25263056" targetRef="sid-4a631c9a-f797-44a8-8676-e3ccdf9daea7"/>
     <sequenceFlow id="sid-8a22bfcc-152f-4486-9796-2026994d8ae8" sourceRef="sid-1ec6602e-30f5-4c22-807f-51130c44a205" targetRef="sid-4a631c9a-f797-44a8-8676-e3ccdf9daea7" name="出差时间小于3天">
       <conditionExpression>${form.days&lt;=3}</conditionExpression>

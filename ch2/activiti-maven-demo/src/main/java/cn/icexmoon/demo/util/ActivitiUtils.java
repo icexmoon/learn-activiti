@@ -75,7 +75,7 @@ public class ActivitiUtils {
         processEngine.getRepositoryService().createDeployment()
                 .addClasspathResource(bpmn)
                 .addClasspathResource(png)
-                .name("出差申请v4")
+                .name(name)
                 .deploy();
     }
 
@@ -162,5 +162,33 @@ public class ActivitiUtils {
         }
         // 完成任务
         taskService.complete(taskId);
+    }
+
+
+    /**
+     * 获取任务实例的一个执行人（委托人或候选人）
+     *
+     * @param taskId 任务实例id
+     * @return 用户id
+     */
+    public String getTaskExecutor(String taskId) {
+        // 检查任务有没有委托人，如果有，直接返回
+        TaskService taskService = processEngine.getTaskService();
+        Task task = taskService.createTaskQuery()
+                .taskId(taskId)
+                .singleResult();
+        if (task == null) {
+            throw new RuntimeException(String.format("不存在ID为(%s)的任务实例", taskId));
+        }
+        if (task.getAssignee() != null) {
+            return task.getAssignee();
+        }
+        // 获取一个候选人并返回
+        List<String> candidates = listCandidates(taskId);
+        if (candidates == null || candidates.isEmpty()) {
+            // 既没有委托人也没有候选人
+            return null;
+        }
+        return candidates.get(0);
     }
 }
