@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: demo
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/activiti2
+    username: root
+    password: mysql
+  activiti:
+    database-schema-update: true # 应用启动后自动更新 activiti 表结构
+    db-history-used: true # 记录 activiti 历史信息
+    history-level: full # 记录所有的历史信息
+    check-process-definitions: true # 自动检查 processes 目录下的 bpmn 文件部署
+    process-definition-location-prefix: classpath:/processes/ # 默认保存 bpmn 文件的位置
+    process-definition-location-suffixes: ['**.bpmn','**.bpmn20.xml'] # bpmn 文件的后缀名
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,org.activiti.spring.boot.SecurityAutoConfiguration
+
