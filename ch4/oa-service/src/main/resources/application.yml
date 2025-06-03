@@ -1,0 +1,31 @@
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,org.activiti.spring.boot.SecurityAutoConfiguration
+  activiti:
+    db-history-used: true
+    history-level: full
+    check-process-definitions: off # 关闭流程自动部署
+    async-executor-activate: off # 关闭异步任务（避免频繁输出 SQL 日志）
+  profiles:
+    active: dev
+  application:
+    name: oa-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/oa_demo?useSSL=false&serverTimezone=UTC
+    username: root
+    password: mysql
+  data:
+    redis:
+      password: 123321
+      host: 192.168.0.88
+logging:
+  level:
+    org.springframework.web: DEBUG
+    org.apache.tomcat: DEBUG
+mybatis-plus:
+  global-config:
+    db-config:
+      column-format: "`%s`"   # 所有字段自动加反引号
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

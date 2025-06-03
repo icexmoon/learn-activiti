@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.icexmoon.oaservice.mapper.InterfaceMapper">
+
+    <resultMap id="BaseResultMap" type="cn.icexmoon.oaservice.entity.Interface">
+            <id property="id" column="id" />
+            <result property="name" column="name" />
+            <result property="desc" column="desc" />
+            <result property="path" column="path" />
+            <result property="method" column="method" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,desc,path,method,mode_view,
+        mode_add,mode_edit,mode_del
+    </sql>
+</mapper>
