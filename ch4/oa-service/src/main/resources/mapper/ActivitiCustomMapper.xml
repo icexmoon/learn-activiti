@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.icexmoon.oaservice.mapper.ActivitiCustomMapper">
+    <resultMap id="processDefinition" type="org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntityImpl">
+        <id property="id" column="ID_" />
+        <result property="version" column="REV_"/>
+        <result property="category" column="CATEGORY_"/>
+        <result property="name" column="NAME_"/>
+        <result property="key" column="KEY_"/>
+        <result property="version" column="VERSION_"/>
+        <result property="deploymentId" column="DEPLOYMENT_ID_"/>
+        <result property="description" column="DESCRIPTION_"/>
+        <result property="resourceName" column="RESOURCE_NAME_"/>
+        <result property="diagramResourceName" column="DGRM_RESOURCE_NAME_"/>
+    </resultMap>
+    <select id="customSelectProcessDefinitions" resultMap="processDefinition">
+        SELECT PD.*
+        FROM ACT_RE_PROCDEF PD
+        JOIN ACT_RE_DEPLOYMENT DEP ON PD.DEPLOYMENT_ID_ = DEP.ID_
+        WHERE 1=1
+        <if test="start != null">
+            AND DEP.DEPLOY_TIME_ &gt;= #{start}
+        </if>
+        <if test="end != null">
+            AND DEP.DEPLOY_TIME_ &lt;= #{end}
+        </if>
+        <if test="key != null and '' != key">
+            AND PD.KEY_ LIKE CONCAT('%',#{key},'%')
+        </if>
+        <if test="processDefinitionName != null and '' != processDefinitionName">
+            AND PD.NAME_ LIKE CONCAT('%',#{processDefinitionName},'%')
+        </if>
+        <if test="deploymentName != null and '' != deploymentName">
+            AND DEP.NAME_ LIKE CONCAT('%',#{deploymentName},'%')
+        </if>
+        ORDER BY DEP.DEPLOY_TIME_ DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="customCountProcessDefinitions" resultType="long">
+        SELECT COUNT(1)
+        FROM ACT_RE_PROCDEF PD
+                 JOIN ACT_RE_DEPLOYMENT DEP ON PD.DEPLOYMENT_ID_ = DEP.ID_
+        WHERE 1=1
+        <if test="start != null">
+            AND DEP.DEPLOY_TIME_ &gt;= #{start}
+        </if>
+        <if test="end != null">
+            AND DEP.DEPLOY_TIME_ &lt;= #{end}
+        </if>
+        <if test="key != null and '' != key">
+            AND PD.KEY_ LIKE CONCAT('%',#{key},'%')
+        </if>
+        <if test="processDefinitionName != null and '' != processDefinitionName">
+            AND PD.NAME_ LIKE CONCAT('%',#{processDefinitionName},'%')
+        </if>
+        <if test="deploymentName != null and '' != deploymentName">
+            AND DEP.NAME_ LIKE CONCAT('%',#{deploymentName},'%')
+        </if>
+    </select>
+</mapper>

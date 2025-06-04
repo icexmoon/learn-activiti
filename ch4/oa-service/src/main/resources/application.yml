@@ -6,13 +6,18 @@ spring:
     history-level: full
     check-process-definitions: off # 关闭流程自动部署
     async-executor-activate: off # 关闭异步任务（避免频繁输出 SQL 日志）
+    database-schema-update: false
+    custom-mybatis-xml-mappers:
+      - mapper/ActivitiCustomMapper.xml
+    custom-mybatis-mappers:
+      - cn.icexmoon.oaservice.mapper.ActivitiCustomMapper
   profiles:
     active: dev
   application:
     name: oa-service
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/oa_demo?useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/oa_demo?useSSL=false&serverTimezone=UTC&nullCatalogMeansCurrent=true
     username: root
     password: mysql
   data:
@@ -23,6 +28,8 @@ logging:
   level:
     org.springframework.web: DEBUG
     org.apache.tomcat: DEBUG
+    org.activiti: debug
+    org.apache.ibatis: trace
 mybatis-plus:
   global-config:
     db-config:

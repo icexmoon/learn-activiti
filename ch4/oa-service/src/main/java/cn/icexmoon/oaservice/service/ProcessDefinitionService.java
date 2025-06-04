@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
 
 /**
  * @ClassName ProcessDefinitionService
@@ -16,13 +18,47 @@ import java.io.IOException;
  */
 public interface ProcessDefinitionService {
 
-    Page<ProcessDefinitionDTO> page(Long pageNum, Long pageSize);
+    /**
+     * 获取流程定义分页信息
+     *
+     * @param pageNum               当前页码
+     * @param pageSize              页宽
+     * @param key                   流程定义的key
+     * @param processDefinitionName 部署流程时的名称
+     * @return 流程定义
+     */
+    Page<ProcessDefinitionDTO> page(Long pageNum, Long pageSize, String key, String processDefinitionName);
+
+    /**
+     * 获取流程定义分页信息
+     *
+     * @param pageNum               当前页码
+     * @param pageSize              页宽
+     * @param key                   流程定义的key
+     * @param processDefinitionName 部署流程时的名称
+     * @param deploymentName        部署名称
+     * @param start
+     * @param end
+     * @return 流程定义
+     */
+    Page<ProcessDefinitionDTO> page(Long pageNum, Long pageSize, String key, String processDefinitionName, String deploymentName, Date start, Date end);
 
     /**
      * 添加流程定义
-     * @param files 流程定义所需的 BPMN2 文件和 PNG 文件
-     * @param name 流程部署名称
+     *
+     * @param bpmnFile
+     * @param pngFile
+     * @param name  流程部署名称
      * @return 成功/失败
      */
-    Result<Void> add(MultipartFile[] files, String name) throws IOException;
+    Result<Void> add(MultipartFile bpmnFile, MultipartFile pngFile, String name) throws IOException;
+
+    /**
+     * 获取流程定义的资源文件
+     *
+     * @param deploymentId 流程定义id
+     * @param resourceName 资源文件名称
+     * @return 资源文件的输入流
+     */
+    InputStream getResource(String deploymentId, String resourceName);
 }

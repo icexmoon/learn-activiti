@@ -40,8 +40,8 @@ public class MenuController {
      * @return 菜单树
      */
     @GetMapping("/tree")
-    public Result<Menu> tree() {
-        Menu rootMenu = menuService.getTree();
+    public Result<Menu> tree(@RequestParam(required = false) Boolean checkPermission) {
+        Menu rootMenu = menuService.getTree(checkPermission);
         return Result.success(rootMenu);
     }
 

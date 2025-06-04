@@ -34,8 +34,11 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu>
     private UserService userService;
 
     @Override
-    public Menu getTree() {
+    public Menu getTree(Boolean checkPermission) {
         Menu simpleTreeCopy = TreeUtil.getSimpleTreeCopy(menuTree.getTree(), Menu.class, false);
+        if (checkPermission == null || !checkPermission){
+            return simpleTreeCopy;
+        }
         // 删除掉没有权限的菜单
         // 遍历树
         Menu permissionMenu = BeanUtil.copyProperties(simpleTreeCopy, Menu.class, "parent", "children");

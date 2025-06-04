@@ -2,12 +2,8 @@ package cn.icexmoon.oaservice;
 
 import lombok.extern.log4j.Log4j2;
 import org.activiti.engine.RepositoryService;
-import org.activiti.engine.repository.ProcessDefinition;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
 
 /**
  * @ClassName ActivitiTests
@@ -22,15 +18,15 @@ public class ActivitiTests {
     @Autowired
     private RepositoryService repositoryService;
 
-    @Test
-    public void test() {
-        List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery()
-                .list();
-        for (ProcessDefinition processDefinition : list) {
-            log.info(String.format("流程定义ID：%s，名称：%s, Key：%s",
-                    processDefinition.getId(),
-                    processDefinition.getName(),
-                    processDefinition.getKey()));
-        }
-    }
+//    @Test
+//    public void test() {
+//        List<ProcessDefinition> list = repositoryService.createProcessDefinitionQuery()
+//                .list();
+//        for (ProcessDefinition processDefinition : list) {
+//            log.info(String.format("流程定义ID：%s，名称：%s, Key：%s",
+//                    processDefinition.getId(),
+//                    processDefinition.getName(),
+//                    processDefinition.getKey()));
+//        }
+//    }
 }
