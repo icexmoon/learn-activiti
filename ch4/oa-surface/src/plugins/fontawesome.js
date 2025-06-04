@@ -23,7 +23,8 @@ import {
   faPlug,
   faSearch,
   faMinus,
-  faUserShield
+  faUserShield,
+  faDiagramProject
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
@@ -49,7 +50,8 @@ library.add(
   faPlug,
   faSearch,
   faMinus,
-  faUserShield
+  faUserShield,
+  faDiagramProject
 )
 
 export default FontAwesomeIcon 

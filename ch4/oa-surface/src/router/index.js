@@ -11,6 +11,7 @@ import Perm from '../views/Perm.vue'
 import Developing from '../views/Developing.vue'
 import Interface from '../views/Interface.vue'
 import Role from '../views/Role.vue'
+import ProcessManagement from '../views/ProcessManagement.vue'
 
 const routes = [
   { path: '/login', component: Login },
@@ -28,7 +29,8 @@ const routes = [
       { path: 'interface', component: Interface },
       { path: 'developing', component: Developing },
       { path: 'role', component: Role },
-      { path: 'permission', component: Perm }
+      { path: 'permission', component: Perm },
+      { path: 'process', component: ProcessManagement }
     ]
   }
 ]

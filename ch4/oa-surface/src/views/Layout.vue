@@ -86,7 +86,7 @@ const getMenuIcon = (menu) => {
 // 获取菜单数据
 const fetchMenuTree = async () => {
   try {
-    const response = await request.get('/api/menu/tree')
+    const response = await request.get('/api/menu/tree?checkPermission=true')
     if (response.success) {
       menuTree.value = response.data.children || []
       // 设置默认展开的菜单
