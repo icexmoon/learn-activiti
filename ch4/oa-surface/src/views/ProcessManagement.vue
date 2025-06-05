@@ -17,14 +17,8 @@
         <el-input v-model="searchForm.deploymentName" placeholder="请输入部署说明" clearable />
       </el-form-item>
       <el-form-item label="部署时间">
-        <el-date-picker
-          v-model="searchForm.dateRange"
-          type="daterange"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          value-format="YYYY-MM-DD"
-        />
+        <el-date-picker v-model="searchForm.dateRange" type="daterange" range-separator="至" start-placeholder="开始日期"
+          end-placeholder="结束日期" value-format="YYYY-MM-DD" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="handleSearch">查询</el-button>
@@ -50,19 +44,18 @@
           </el-link>
         </template>
       </el-table-column>
+      <el-table-column label="操作" width="120" fixed="right">
+        <template #default="{ row }">
+          <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <!-- 分页 -->
     <div class="pagination">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        :total="total"
-        layout="total, sizes, prev, pager, next"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[10, 20, 50, 100]"
+        :total="total" layout="total, sizes, prev, pager, next" @size-change="handleSizeChange"
+        @current-change="handleCurrentChange" />
     </div>
 
     <!-- 新增流程对话框 -->
@@ -72,14 +65,8 @@
           <el-input v-model="addForm.name" placeholder="请输入部署说明" />
         </el-form-item>
         <el-form-item label="BPMN文件" required>
-          <el-upload
-            class="upload-demo"
-            :action="null"
-            :auto-upload="false"
-            :on-change="handleBpmnChange"
-            :limit="1"
-            accept=".xml"
-          >
+          <el-upload ref="bpmnUpload" class="upload-demo" :action="null" :auto-upload="false" :on-change="handleBpmnChange" :limit="1"
+            accept=".xml">
             <template #trigger>
               <el-button type="primary">选择文件</el-button>
             </template>
@@ -89,14 +76,8 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="流程图" required>
-          <el-upload
-            class="upload-demo"
-            :action="null"
-            :auto-upload="false"
-            :on-change="handlePngChange"
-            :limit="1"
-            accept=".png"
-          >
+          <el-upload ref="pngUpload" class="upload-demo" :action="null" :auto-upload="false" :on-change="handlePngChange" :limit="1"
+            accept=".png">
             <template #trigger>
               <el-button type="primary">选择文件</el-button>
             </template>
@@ -118,9 +99,11 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import request from '@/util/request'
 import fileRequest from '@/util/file_request'
+const bpmnUpload = ref(null)
+const pngUpload = ref(null)
 
 // 搜索表单数据
 const searchForm = reactive({
@@ -156,7 +139,7 @@ const fetchData = async () => {
       end: end || null,
       deploymentName: searchForm.deploymentName || null
     }
-    
+
     const response = await request.get('/api/process_definition/page', { params })
     console.log(response)
     if (response.success) {
@@ -202,6 +185,8 @@ const showAddDialog = () => {
   addForm.name = ''
   addForm.bpmnFile = null
   addForm.pngFile = null
+  bpmnUpload.value.clearFiles()
+  pngUpload.value.clearFiles()
 }
 
 // 处理文件选择
@@ -263,7 +248,7 @@ const downloadFile = async (deploymentId, fileName) => {
       params: { deploymentId, fileName },
       responseType: 'blob'
     })
-    
+
     // 检查响应类型
     const contentType = response.headers?.['content-type']
     if (contentType && contentType.includes('application/json')) {
@@ -289,7 +274,7 @@ const downloadFile = async (deploymentId, fileName) => {
     link.setAttribute('download', fileName)
     document.body.appendChild(link)
     link.click()
-    
+
     // 清理
     setTimeout(() => {
       document.body.removeChild(link)
@@ -297,7 +282,7 @@ const downloadFile = async (deploymentId, fileName) => {
     }, 100)
   } catch (error) {
     console.error('下载文件失败:', error)
-    
+
     // 处理错误响应
     if (error.data instanceof Blob) {
       // 如果是 Blob 类型的错误响应
@@ -318,6 +303,64 @@ const downloadFile = async (deploymentId, fileName) => {
     } else {
       // 处理未知类型的错误
       ElMessage.error('下载文件失败：未知错误')
+    }
+  }
+}
+
+// 删除流程定义
+const handleDelete = async (row) => {
+  try {
+    await ElMessageBox.confirm(
+      '确定要删除该流程定义吗？',
+      '警告',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+
+    const deleteProcess = async (force = false) => {
+      try {
+        const response = await request.delete('/api/process_definition/deployment', {
+          params: {
+            processDefinitionId: row.deploymentId,
+            force: force
+          }
+        })
+
+        if (response.success) {
+          ElMessage.success('删除成功')
+          fetchData()
+        } else {
+          console.log(force)
+        }
+      } catch (error) {
+        if (!force) {
+          // 如果删除失败且不是强制删除，询问是否强制删除
+          const confirmForce = await ElMessageBox.confirm(
+            '删除失败，是否强制删除？',
+            '提示',
+            {
+              confirmButtonText: '强制删除',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }
+          )
+          if (confirmForce) {
+            await deleteProcess(true)
+          }
+        } else {
+          ElMessage.error('删除失败：' + (error || '未知错误'))
+        }
+      }
+    }
+
+    await deleteProcess()
+  } catch (error) {
+    // 用户取消删除操作
+    if (error !== 'cancel') {
+      ElMessage.error('操作失败：' + (error.message || '未知错误'))
     }
   }
 }
@@ -358,4 +401,4 @@ onMounted(() => {
   justify-content: flex-end;
   gap: 10px;
 }
-</style> 
+</style>
