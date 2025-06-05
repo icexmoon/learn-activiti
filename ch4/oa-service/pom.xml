@@ -118,13 +118,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.activiti/spring-boot-sample-custom-mybatis-mapper -->
-<!--        <dependency>-->
-<!--            <groupId>org.activiti</groupId>-->
-<!--            <artifactId>spring-boot-sample-custom-mybatis-mapper</artifactId>-->
-<!--            <version>6.0.0</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>cn.icexmoon</groupId>
+            <artifactId>activiti-util</artifactId>
+            <version>1.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -134,7 +132,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.14.0</version>
                 <configuration>
-<!--                    <release>${java.version}</release>-->
+                    <!--                    <release>${java.version}</release>-->
                     <target>${java.version}</target>
                     <source>${java.version}</source>
                     <encoding>UTF-8</encoding>

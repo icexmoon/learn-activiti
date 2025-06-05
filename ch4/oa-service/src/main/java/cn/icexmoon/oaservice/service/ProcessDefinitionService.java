@@ -48,7 +48,7 @@ public interface ProcessDefinitionService {
      *
      * @param bpmnFile
      * @param pngFile
-     * @param name  流程部署名称
+     * @param name     流程部署名称
      * @return 成功/失败
      */
     Result<Void> add(MultipartFile bpmnFile, MultipartFile pngFile, String name) throws IOException;
@@ -61,4 +61,13 @@ public interface ProcessDefinitionService {
      * @return 资源文件的输入流
      */
     InputStream getResource(String deploymentId, String resourceName);
+
+    /**
+     * 删除流程部署
+     *
+     * @param deploymentId 流程定义id
+     * @param force        是否强制删除（将级联删除相关的进程实例）
+     * @return 成功/失败
+     */
+    Result<Void> delete(String deploymentId, Boolean force);
 }

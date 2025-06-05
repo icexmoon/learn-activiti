@@ -1,5 +1,8 @@
 package cn.icexmoon.oaservice.service;
 
+import cn.hutool.core.util.RandomUtil;
+import cn.icexmoon.oaservice.entity.User;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -24,14 +27,14 @@ public class UserServiceTests {
     /**
      * 生成测试用的用户数据
      */
-//    @Test
-//    public void testInitUsers() {
-//        for(int i=0;i<100;i++) {
-//            User user = new User();
-//            String phone = RandomUtil.randomNumbers(11);
-//            user.setPhone(phone);
-//            user.setDeptId(2L);
-//            userService.save(user);
-//        }
-//    }
+    @Test
+    public void testInitUsers() {
+        for(int i=0;i<100;i++) {
+            User user = new User();
+            String phone = RandomUtil.randomNumbers(11);
+            user.setPhone(phone);
+            user.setDeptId(2L);
+            userService.save(user);
+        }
+    }
 }

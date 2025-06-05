@@ -69,11 +69,16 @@ public class ProcessDefinitionController {
         // 3. 设置响应头（关键步骤）
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName); // [3,6](@ref)
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); // [6,8](@re
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         return ResponseEntity.ok()
                 .headers(headers)
-                .contentLength(inputStream.available()) // [2](@ref)
+                .contentLength(inputStream.available())
                 .body(resource);
+    }
+
+    @DeleteMapping("/deployment")
+    public Result<Void> delete(@RequestParam String processDefinitionId, @RequestParam(required = false) Boolean force) {
+        return processDefinitionService.delete(processDefinitionId, force);
     }
 
 }

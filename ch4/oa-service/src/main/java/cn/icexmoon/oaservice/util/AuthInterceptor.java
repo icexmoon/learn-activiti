@@ -74,6 +74,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private static void setLoginErrorResponse(HttpServletResponse response, String message) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setCharacterEncoding("UTF-8");
         Result<Void> fail = Result.fail(message);
         response.getWriter().write(JSON.toJSONString(fail));
     }

@@ -1,6 +1,7 @@
 package cn.icexmoon.oaservice.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.icexmoon.oaservice.dto.ProcessDefinitionDTO;
 import cn.icexmoon.oaservice.mapper.ActivitiCustomMapper;
@@ -15,6 +16,7 @@ import org.activiti.engine.impl.cmd.AbstractCustomSqlExecution;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -155,5 +157,20 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
     @Override
     public InputStream getResource(String deploymentId, String resourceName) {
         return repositoryService.getResourceAsStream(deploymentId, resourceName);
+    }
+
+    @Override
+    public Result<Void> delete(String deploymentId, Boolean force) {
+        if (BooleanUtil.isTrue(force)) {
+            repositoryService.deleteDeployment(deploymentId, true);
+        } else {
+            try {
+                repositoryService.deleteDeployment(deploymentId);
+            } catch (PersistenceException e) {
+                // 存在没有完成审批的流程实例，不能删除
+                return Result.fail("该审批流有申请未完成审批");
+            }
+        }
+        return Result.success();
     }
 }
