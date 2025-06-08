@@ -42,8 +42,9 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="150" fixed="right">
+      <el-table-column label="操作" width="200" fixed="right">
         <template #default="{ row }">
+          <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
           <el-button type="primary" link @click="handleToggleStatus(row)">
             {{ row.enable ? '停用' : '启用' }}
           </el-button>
@@ -87,6 +88,39 @@
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
           <el-button type="primary" @click="handleAdd">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- 编辑申请流对话框 -->
+    <el-dialog v-model="editDialogVisible" title="编辑申请流" width="500px">
+      <el-form :model="editForm" label-width="100px" :rules="rules" ref="editFormRef">
+        <el-form-item label="申请流名称" prop="name">
+          <el-input v-model="editForm.name" placeholder="请输入申请流名称" />
+        </el-form-item>
+        <el-form-item label="流程定义" prop="processKey">
+          <el-input v-model="editForm.processKey" placeholder="请输入流程定义key" />
+        </el-form-item>
+        <el-form-item label="表单标识" prop="formKey">
+          <el-input v-model="editForm.formKey" placeholder="请输入表单标识" />
+        </el-form-item>
+        <el-form-item label="适用职位" prop="positionIds">
+          <el-checkbox-group v-model="editForm.positionIds">
+            <el-checkbox @change="positionChoose($event, 0)" :value="0">任何人</el-checkbox>
+            <el-checkbox @change="positionChoose($event, item.id)" v-for="item in positionOptions" :key="item.id"
+              :value="item.id">
+              {{ item.name }}
+            </el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="状态" prop="enable">
+          <el-switch v-model="editForm.enable" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="editDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitEdit">确定</el-button>
         </span>
       </template>
     </el-dialog>
@@ -138,12 +172,26 @@ const positionChoose = (choosed, positionId) => {
   if (positionId == 0 && choosed) {
     // 任何人选中
     addForm.positionIds = [0]
+    editForm.positionIds = [0]
   }
   else if (choosed && positionId != 0) {
     // 其它人选中
     addForm.positionIds = addForm.positionIds.filter(item => item != 0)
+    editForm.positionIds = editForm.positionIds.filter(item => item != 0)
   }
 }
+
+// 编辑申请流表单数据
+const editDialogVisible = ref(false)
+const editFormRef = ref(null)
+const editForm = reactive({
+  id: null,
+  name: '',
+  processKey: '',
+  formKey: '',
+  positionIds: [],
+  enable: true
+})
 
 // 获取职位列表
 const fetchPositions = async () => {
@@ -221,6 +269,16 @@ const showAddDialog = () => {
   addForm.enable = true
 }
 
+// 打开编辑对话框
+const handleEdit = (row) => {
+  Object.assign(editForm, row)
+  // 如果没有选中职位，则将任何职位都设置为选中
+  if (editForm.positionIds == null || editForm.positionIds.length == 0) {
+    editForm.positionIds = [0]
+  }
+  editDialogVisible.value = true
+}
+
 // 新增申请流
 const handleAdd = async () => {
   if (!addFormRef.value) return
@@ -242,6 +300,33 @@ const handleAdd = async () => {
         }
       } catch (error) {
         ElMessage.error('新增申请流失败：' + (error.message || '未知错误'))
+      }
+    }
+  })
+}
+
+// 提交编辑
+const submitEdit = async () => {
+  if (!editFormRef.value) return
+
+  await editFormRef.value.validate(async (valid) => {
+    if (valid) {
+      try {
+        const submitData = {
+          ...editForm,
+          positionIds: editForm.positionIds.includes(0) ? null : editForm.positionIds
+        }
+
+        const response = await request.post('/api/apply_process/edit', submitData)
+        if (response.success) {
+          ElMessage.success('编辑申请流成功')
+          editDialogVisible.value = false
+          fetchData()
+        } else {
+          ElMessage.error(response.message || '编辑申请流失败')
+        }
+      } catch (error) {
+        ElMessage.error('编辑申请流失败：' + (error.message || '未知错误'))
       }
     }
   })
