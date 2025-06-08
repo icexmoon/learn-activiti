@@ -55,9 +55,10 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
         if (!StrUtil.isEmpty(processDefinitionName)) {
             processDefinitionQuery.processDefinitionNameLike(processDefinitionName);
         }
+        int offset = (int)((pageNum - 1) * pageSize);
         List<ProcessDefinition> processDefinitions = processDefinitionQuery
                 .orderByProcessDefinitionVersion().desc()
-                .listPage(pageNum.intValue() - 1, pageSize.intValue());
+                .listPage(offset, pageSize.intValue());
         long count = repositoryService.createProcessDefinitionQuery().count();
         Page<ProcessDefinitionDTO> page = new Page<>(pageNum, pageSize);
         List<ProcessDefinitionDTO> dtos = getProcessDefinitionDTOS(processDefinitions);
@@ -73,7 +74,7 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
             return page(pageNum, pageSize, key, processDefinitionName);
         }
         // 查询流程部署
-        // 执行原生 SQL
+        // 执行自定义 Mapper 查询
         int offset = (int) ((pageNum - 1) * pageSize);
         int Limit = pageSize.intValue();
         List<ProcessDefinition> processDefinitions = getProcessDefinitions(start, end, offset, Limit, key, processDefinitionName, deploymentName);
