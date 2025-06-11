@@ -4,7 +4,7 @@ import App from './App.vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import router from './router/index.js'
-import { StagewiseToolbar } from '@stagewise/toolbar-vue'
+// import { StagewiseToolbar } from '@stagewise/toolbar-vue'
 import FontAwesomeIcon from './plugins/fontawesome'
 
 const app = createApp(App)
@@ -17,7 +17,7 @@ if (import.meta.env.DEV) {
   const stagewiseConfig = {
     plugins: []
   }
-  app.component('StagewiseToolbar', StagewiseToolbar)
+  // app.component('StagewiseToolbar', StagewiseToolbar)
   app.provide('stagewiseConfig', stagewiseConfig)
 }
 

@@ -13,6 +13,10 @@ import Interface from '../views/Interface.vue'
 import Role from '../views/Role.vue'
 import ProcessManagement from '../views/ProcessManagement.vue'
 import ApplyProcessManagement from '../views/ApplyProcessManagement.vue'
+import ApplyList from '../views/ApplyList.vue'
+import BusinessTravelApplyVue from '@/views/BusinessTravelApply.vue'
+import ApplyFormVue from '@/views/ApplyForm.vue'
+import FormManagementVue from '@/views/FormManagement.vue'
 
 const routes = [
   { path: '/login', component: Login },
@@ -25,6 +29,7 @@ const routes = [
       { path: 'department', component: Department },
       { path: 'menu', component: Menu },
       { path: 'apply', component: Apply },
+      { path: 'apply/list', component: ApplyList },  // 新增的申请列表页面路由
       { path: 'todo', component: Todo },
       { path: 'perm', component: Perm },
       { path: 'interface', component: Interface },
@@ -32,7 +37,10 @@ const routes = [
       { path: 'role', component: Role },
       { path: 'permission', component: Perm },
       { path: 'process', component: ProcessManagement },
-      { path: 'applyProcessManagement', component: ApplyProcessManagement }
+      { path: 'applyProcessManagement', component: ApplyProcessManagement },
+      { path: 'businessTravelApply', component: BusinessTravelApplyVue },
+      { path: 'applyForm/:applyProcessId', component: ApplyFormVue },
+      { path: 'formManagement', component: FormManagementVue },
     ]
   }
 ]

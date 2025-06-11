@@ -3,13 +3,13 @@ import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
 import { inject } from 'vue'
 
-const stagewiseConfig = inject('stagewiseConfig')
+// const stagewiseConfig = inject('stagewiseConfig')
 const isDev = import.meta.env.DEV
 </script>
 
 <template>
   <router-view />
-  <StagewiseToolbar v-if="isDev" :config="stagewiseConfig" />
+  <!-- <StagewiseToolbar v-if="isDev" :config="stagewiseConfig" /> -->
 </template>
 
 <style>
