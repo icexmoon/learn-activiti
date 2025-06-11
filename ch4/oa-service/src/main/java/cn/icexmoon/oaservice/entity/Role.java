@@ -17,9 +17,11 @@ import java.util.List;
 @TableName(value = "role", autoResultMap = true)
 @Data
 public class Role {
-    public static final String ROLE_GUEST = "guest";
     // 特殊的硬编码角色
+    public static final String ROLE_GUEST = "guest";
     public static final String ROLE_ROOT = "root";
+    public static final String ROLE_ADMIN = "admin";
+
     /**
      * 菜单权限
      */
@@ -52,4 +54,11 @@ public class Role {
      */
     @TableField(typeHandler = JacksonTypeHandler.class)
     private List<MenuPermission> menuPermissions;
+
+    public boolean isRole(String roleKey) {
+        if (roleKey == null) {
+            return false;
+        }
+        return roleKey.equals(this.getKey());
+    }
 }

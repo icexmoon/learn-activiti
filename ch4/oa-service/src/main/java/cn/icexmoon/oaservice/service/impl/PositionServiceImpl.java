@@ -36,6 +36,20 @@ public class PositionServiceImpl extends ServiceImpl<PositionMapper, Position>
         List<Position> positions = list(new QueryWrapper<Position>().orderByAsc("level"));
         return Result.success(positions);
     }
+
+    @Override
+    public String getPositionName(Integer positionId) {
+        if (positionId == null) {
+            return "";
+        }
+        // 从内存获取职位映射
+        Map<Integer, Position> positionMap = this.getPositionMap();
+        Position position = positionMap.get(positionId);
+        if (position == null) {
+            return "";
+        }
+        return position.getName();
+    }
 }
 
 

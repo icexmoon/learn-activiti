@@ -22,4 +22,12 @@ public interface PositionService extends IService<Position> {
     Map<Integer, Position> getPositionMap();
 
     Result<List<Position>> getPositions();
+
+    /**
+     * 获取职位名称
+     *
+     * @param positionId 职位id
+     * @return 职位名称
+     */
+    String getPositionName(Integer positionId);
 }

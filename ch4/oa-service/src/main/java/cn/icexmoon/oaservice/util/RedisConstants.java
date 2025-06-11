@@ -17,6 +17,8 @@ public class RedisConstants {
     // 请求登录时短信验证码的 KEY 前缀
     public static final String KEY_LOGIN_CODE = "login:code:";
     public static final String KEY_TOKEN = "login:token:";
+    // 方法缓存前缀
+    public static final String KEY_CACHE_METHOD = "cache:method:";
     // 登录时短信验证码的有效时长（秒）
     public static final long TTL_LOGIN_CODE = 5 * 60;
     public static final long TTL_TOKEN = 30 * 60;

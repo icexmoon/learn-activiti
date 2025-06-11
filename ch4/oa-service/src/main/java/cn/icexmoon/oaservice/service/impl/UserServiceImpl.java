@@ -2,6 +2,7 @@ package cn.icexmoon.oaservice.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.icexmoon.oaservice.dto.UserDTO;
+import cn.icexmoon.oaservice.dto.UserInfoDTO;
 import cn.icexmoon.oaservice.dto.UserRolesDTO;
 import cn.icexmoon.oaservice.entity.*;
 import cn.icexmoon.oaservice.mapper.UserMapper;
@@ -244,8 +245,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             currentUser.setRoles(List.of(roleService.getRoleByKey(Role.ROLE_GUEST)));
         }
         // 获取用户拥有的角色的菜单权限
-        Map<Integer, Role.MenuPermission> multiRoleMenuPermissions = roleService.getMultiRoleMenuPermissions(currentUser.getRoles());
-        return multiRoleMenuPermissions;
+        return roleService.getMultiRoleMenuPermissions(currentUser.getRoles());
     }
 
     @Override
@@ -254,6 +254,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         // 填充角色信息
         fillRoles(List.of(user));
         return user;
+    }
+
+    @Override
+    public Result<UserInfoDTO> getInfo(@NonNull User user) {
+        UserInfoDTO userDTO = new UserInfoDTO();
+        userDTO.setName(user.getName());
+        userDTO.setPhone(user.getPhone());
+        // 获取用户的部门名称
+        String deptName = departmentService.getDeptName(user.getDeptId());
+        userDTO.setDeptName(deptName);
+        String fullDeptName = departmentService.getFullDeptName(user.getDeptId());
+        userDTO.setFullDeptName(fullDeptName);
+        String positionName = positionService.getPositionName(user.getPositionId());
+        userDTO.setPositionName(positionName);
+        return Result.success(userDTO);
     }
 }
 

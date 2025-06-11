@@ -1,6 +1,7 @@
 package cn.icexmoon.oaservice.service;
 
 import cn.icexmoon.oaservice.dto.UserDTO;
+import cn.icexmoon.oaservice.dto.UserInfoDTO;
 import cn.icexmoon.oaservice.dto.UserRolesDTO;
 import cn.icexmoon.oaservice.entity.Role;
 import cn.icexmoon.oaservice.entity.User;
@@ -87,4 +88,12 @@ public interface UserService extends IService<User> {
      * @return 用户
      */
     User getUserById(Long uid);
+
+    /**
+     * 获取指定用户的基本信息
+     *
+     * @param user 用户
+     * @return 基本信息
+     */
+    Result<UserInfoDTO> getInfo(User user);
 }

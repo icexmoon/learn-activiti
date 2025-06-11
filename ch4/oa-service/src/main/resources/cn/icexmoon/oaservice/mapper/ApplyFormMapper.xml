@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.icexmoon.oaservice.mapper.ApplyFormMapper">
+    <insert id="addApplyForm" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `apply_form` (`key`, `name`, `path`, `create_time`, `version`)
+        VALUES (#{key},
+                #{name},
+                #{path},
+                NOW(),
+                (SELECT IFNULL(MAX(version), 0) + 1 FROM `apply_form` AS tmp WHERE `key`=#{key}) -- 子查询获取最大值+1
+               );
+    </insert>
+    <select id="getKeys" resultType="java.lang.String">
+        select distinct `key`
+        from apply_form;
+    </select>
+
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.icexmoon.oaservice.mapper.ApplyInstanceMapper">
+
+<!--    <resultMap id="BaseResultMap" type="cn.icexmoon.oaservice.entity.ApplyInstance">-->
+<!--            <id property="id" column="id" />-->
+<!--            <result property="userId" column="user_id" />-->
+<!--            <result property="applyProcessId" column="apply_process_id" />-->
+<!--            <result property="processKey" column="process_key" />-->
+<!--            <result property="formId" column="form_id" />-->
+<!--            <result property="formData" column="form_data" />-->
+<!--            <result property="createTime" column="create_time" />-->
+<!--    </resultMap>-->
+
+<!--    <sql id="Base_Column_List">-->
+<!--        id,user_id,apply_process_id,process_key,form_id,form_data,-->
+<!--        create_time-->
+<!--    </sql>-->
+</mapper>

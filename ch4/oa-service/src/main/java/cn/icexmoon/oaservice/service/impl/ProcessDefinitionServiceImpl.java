@@ -3,11 +3,14 @@ package cn.icexmoon.oaservice.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.icexmoon.oaservice.dto.KeyNameDTO;
 import cn.icexmoon.oaservice.dto.ProcessDefinitionDTO;
 import cn.icexmoon.oaservice.mapper.ActivitiCustomMapper;
 import cn.icexmoon.oaservice.service.ProcessDefinitionService;
+import cn.icexmoon.oaservice.util.RedisMethodCache;
 import cn.icexmoon.oaservice.util.Result;
 import cn.icexmoon.oaservice.util.TimeUtils;
+import com.alibaba.fastjson2.TypeReference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.log4j.Log4j2;
 import org.activiti.engine.ManagementService;
@@ -18,14 +21,13 @@ import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @ClassName ProcessDefitnitionServiceImpl
@@ -45,6 +47,8 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
     private RepositoryService repositoryService;
     @Autowired
     private ManagementService managementService;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public Page<ProcessDefinitionDTO> page(Long pageNum, Long pageSize, String key, String processDefinitionName) {
@@ -55,7 +59,7 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
         if (!StrUtil.isEmpty(processDefinitionName)) {
             processDefinitionQuery.processDefinitionNameLike(processDefinitionName);
         }
-        int offset = (int)((pageNum - 1) * pageSize);
+        int offset = (int) ((pageNum - 1) * pageSize);
         List<ProcessDefinition> processDefinitions = processDefinitionQuery
                 .orderByProcessDefinitionVersion().desc()
                 .listPage(offset, pageSize.intValue());
@@ -173,5 +177,27 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
             }
         }
         return Result.success();
+    }
+
+    @Override
+    public Result<List<KeyNameDTO>> getKeys() {
+        RedisMethodCache<List<KeyNameDTO>> redisMethodCache = new RedisMethodCache<>(
+                stringRedisTemplate,
+                "process_definition/keys",
+                this::getKeysWithNoCache,
+                new TypeReference<>() {
+                },
+                60);
+        return Result.success(redisMethodCache.get());
+    }
+
+    List<KeyNameDTO> getKeysWithNoCache() {
+        List<ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery()
+                .list();
+        List<KeyNameDTO> keyNameDTOS = processDefinitions.stream()
+                .map(pd -> new KeyNameDTO(pd.getKey(), pd.getName()))
+                .toList();
+        Set<KeyNameDTO> keyNameDTOSet = new HashSet<>(keyNameDTOS);
+        return keyNameDTOSet.stream().toList();
     }
 }

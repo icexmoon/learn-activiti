@@ -37,4 +37,20 @@ public interface DepartmentService extends IService<Department> {
     boolean cascadeDelete(Long id);
 
     Result<Long> addDepartment(DepartmentDTO deptDTO);
+
+    /**
+     * 根据部门 id 获取部门名称
+     *
+     * @param deptId 部门id
+     * @return 部门名称
+     */
+    String getDeptName(Long deptId);
+
+    /**
+     * 获取完整的部门名称
+     *
+     * @param deptId 部门id
+     * @return 完整部门名称
+     */
+    String getFullDeptName(Long deptId);
 }

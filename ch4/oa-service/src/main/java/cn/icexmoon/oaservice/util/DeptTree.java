@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -36,7 +37,7 @@ public class DeptTree {
     }
 
     private Tree<Department> getDepartmentTree() {
-        if (this.tree != null){
+        if (this.tree != null) {
             return this.tree;
         }
         final Tree<Department> tree;
@@ -70,7 +71,7 @@ public class DeptTree {
         final Tree<Department> tree = getDepartmentTree();
         Node<Department> currentNode = tree.findNode(node -> id.equals(node.getValue().getId()));
         List<Node<Department>> allParents = tree.getAllParents(currentNode);
-        if (allParents.isEmpty()){
+        if (allParents.isEmpty()) {
             return currentNode.getValue().getName();
         }
         List<String> names = allParents.stream().map(n -> n.getValue().getName()).collect(Collectors.toList());
@@ -78,8 +79,21 @@ public class DeptTree {
         return String.join("/", names);
     }
 
-    public Department getSimpleTree(){
+    public Department getSimpleTree() {
         return TreeUtil.getSimpleTreeCopy(getDepartmentTree(), Department.class, false);
     }
 
+    /**
+     * 根据匿名函数查找符合条件的第一个部门
+     *
+     * @param predicate 条件
+     * @return 符合条件的部门
+     */
+    public Department findDepartment(Predicate<Department> predicate) {
+        Node<Department> findNode = this.tree.findNode(node -> predicate.test(node.getValue()));
+        if (findNode == null) {
+            return null;
+        }
+        return findNode.getValue();
+    }
 }

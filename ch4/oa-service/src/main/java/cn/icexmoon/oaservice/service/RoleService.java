@@ -2,6 +2,7 @@ package cn.icexmoon.oaservice.service;
 
 import cn.icexmoon.oaservice.dto.RoleMenuPermitDTO;
 import cn.icexmoon.oaservice.entity.Role;
+import cn.icexmoon.oaservice.entity.User;
 import cn.icexmoon.oaservice.util.Result;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -56,4 +57,13 @@ public interface RoleService extends IService<Role> {
      * @return 菜单权限映射（key 为菜单id）
      */
     Map<Integer, Role.MenuPermission> getMultiRoleMenuPermissions(Collection<Role> roles);
+
+    /**
+     * 判断指定用户是否某种角色
+     *
+     * @param user 用户
+     * @param roleKey 角色标识
+     * @return 是否某种角色
+     */
+    boolean isRole(User user, String roleKey);
 }

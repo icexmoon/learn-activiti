@@ -65,7 +65,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         // 删除部门和子部门
         DepartmentService departmentService = beanFactory.getBean(DepartmentService.class);
         boolean result = departmentService.removeBatchByIds(allSubDeptIds);
-        if (result){
+        if (result) {
             // 级联删除部门虚拟员工表
             deptVirtualUserService.removeByDeptIds(allSubDeptIds);
         }
@@ -92,6 +92,26 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         return Result.success(department.getId(), "添加部门成功");
     }
 
+    @Override
+    public String getDeptName(Long deptId) {
+        if (deptId == null) {
+            return "";
+        }
+        // 从内存获取部门映射
+        Department department = this.deptTree.findDepartment(d -> d.getId().equals(deptId));
+        if (department == null) {
+            return "";
+        }
+        return department.getName();
+    }
+
+    @Override
+    public String getFullDeptName(Long deptId) {
+        if (deptId == null) {
+            return "";
+        }
+        return this.deptTree.getFullDeptName(deptId);
+    }
 }
 
 

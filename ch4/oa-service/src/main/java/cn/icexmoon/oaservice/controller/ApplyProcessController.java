@@ -55,4 +55,19 @@ public class ApplyProcessController {
     public Result<Void> edit(@RequestBody ApplyProcess applyProcess){
         return applyProcessService.edit(applyProcess);
     }
+
+    /**
+     * 删除申请流
+     * @param id 申请流id
+     * @return 成功/失败
+     */
+    @DeleteMapping("/{id}")
+    public Result<Void> delete(@PathVariable Long id){
+        return applyProcessService.del(id);
+    }
+
+    @GetMapping("/{id}")
+    public Result<ApplyProcess> get(@PathVariable Long id) {
+        return applyProcessService.getApplyProcess(id);
+    }
 }

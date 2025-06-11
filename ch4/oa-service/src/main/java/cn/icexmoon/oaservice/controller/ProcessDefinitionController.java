@@ -1,5 +1,6 @@
 package cn.icexmoon.oaservice.controller;
 
+import cn.icexmoon.oaservice.dto.KeyNameDTO;
 import cn.icexmoon.oaservice.dto.ProcessDefinitionDTO;
 import cn.icexmoon.oaservice.service.ProcessDefinitionService;
 import cn.icexmoon.oaservice.util.Result;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @ClassName ProcessDefinitionController
@@ -79,6 +81,11 @@ public class ProcessDefinitionController {
     @DeleteMapping("/deployment")
     public Result<Void> delete(@RequestParam String processDefinitionId, @RequestParam(required = false) Boolean force) {
         return processDefinitionService.delete(processDefinitionId, force);
+    }
+
+    @GetMapping("/keys")
+    public Result<List<KeyNameDTO>> keys() {
+        return processDefinitionService.getKeys();
     }
 
 }

@@ -1,9 +1,15 @@
 package cn.icexmoon.oaservice.service.impl;
 
+import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.icexmoon.oaservice.entity.ApplyForm;
 import cn.icexmoon.oaservice.entity.ApplyProcess;
+import cn.icexmoon.oaservice.entity.Role;
+import cn.icexmoon.oaservice.entity.User;
 import cn.icexmoon.oaservice.mapper.ApplyProcessMapper;
+import cn.icexmoon.oaservice.service.ApplyFormService;
 import cn.icexmoon.oaservice.service.ApplyProcessService;
+import cn.icexmoon.oaservice.service.RoleService;
 import cn.icexmoon.oaservice.util.Result;
 import cn.icexmoon.oaservice.util.TimeUtils;
 import com.alibaba.fastjson2.JSON;
@@ -11,9 +17,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 70748
@@ -23,6 +33,11 @@ import java.util.Date;
 @Service
 public class ApplyProcessServiceImpl extends ServiceImpl<ApplyProcessMapper, ApplyProcess>
         implements ApplyProcessService {
+    @Autowired
+    private RoleService roleService;
+    @Lazy
+    @Autowired
+    private ApplyFormService applyFormService;
 
     @Override
     public Result<Long> add(ApplyProcess applyProcess) {
@@ -83,16 +98,56 @@ public class ApplyProcessServiceImpl extends ServiceImpl<ApplyProcessMapper, App
                 .set("position_ids", positionIdsStr)
                 .eq("id", applyProcess.getId())
                 .update();
-        if (updated){
+        if (updated) {
             return Result.success();
         }
         return Result.fail("更新申请流失败");
     }
 
+    @Override
+    public Result<List<ApplyProcess>> listCanApply(User user) {
+        if (user == null) {
+            return Result.fail(Collections.emptyList(), "user 不能为 null");
+        }
+        // 读取所有申请流
+        List<ApplyProcess> applyProcesses = this.list();
+        // 过滤掉禁用的申请流
+        applyProcesses = applyProcesses.stream().filter(ap -> BooleanUtil.isTrue(ap.getEnable())).toList();
+        // 管理员可以看到所有申请入口
+        if (roleService.isRole(user, Role.ROLE_ADMIN)) {
+            return Result.success(applyProcesses);
+        }
+        // 过滤申请流，只保留有申请权限的
+        applyProcesses = applyProcesses.stream().filter(ap -> ap.canApply(user.getPositionId())).toList();
+        return Result.success(applyProcesses);
+    }
+
+    @Override
+    public Result<Void> del(Long id) {
+        boolean updated = this.removeById(id);
+        if (updated) {
+            return Result.success();
+        }
+        return Result.fail("删除申请流失败");
+    }
+
+    @Override
+    public Result<ApplyProcess> getApplyProcess(Long id) {
+        ApplyProcess applyProcess = this.getById(id);
+        // 匹配一个最新的申请单，添加
+        if (applyProcess != null) {
+            ApplyForm applyForm = applyFormService.getApplyFormByFormKey(applyProcess.getFormKey());
+            if (applyForm != null) {
+                applyProcess.setApplyForm(applyForm);
+            }
+        }
+        return Result.success(applyProcess);
+    }
+
     private static String getPositionIdsStr(ApplyProcess applyProcess) {
-        Integer[] positionIds = applyProcess.getPositionIds();
+        List<Integer> positionIds = applyProcess.getPositionIds();
         String positionIdsStr = null;
-        if (positionIds != null && positionIds.length > 0) {
+        if (positionIds != null && !positionIds.isEmpty()) {
             positionIdsStr = JSON.toJSONString(positionIds);
         }
         return positionIdsStr;

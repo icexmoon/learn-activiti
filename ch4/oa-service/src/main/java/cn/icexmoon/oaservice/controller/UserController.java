@@ -2,9 +2,11 @@ package cn.icexmoon.oaservice.controller;
 
 import cn.hutool.core.util.StrUtil;
 import cn.icexmoon.oaservice.dto.UserDTO;
+import cn.icexmoon.oaservice.dto.UserInfoDTO;
 import cn.icexmoon.oaservice.entity.User;
 import cn.icexmoon.oaservice.service.UserService;
 import cn.icexmoon.oaservice.util.Result;
+import cn.icexmoon.oaservice.util.UserHolder;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -56,5 +58,11 @@ public class UserController {
         } else {
             return userService.searchNoRoles(keyword);
         }
+    }
+
+    @GetMapping("/info")
+    public Result<UserInfoDTO> info() {
+        User user = UserHolder.getUser();
+        return userService.getInfo(user);
     }
 }

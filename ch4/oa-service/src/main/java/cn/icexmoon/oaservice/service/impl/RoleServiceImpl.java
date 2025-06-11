@@ -3,6 +3,7 @@ package cn.icexmoon.oaservice.service.impl;
 import cn.hutool.core.util.BooleanUtil;
 import cn.icexmoon.oaservice.dto.RoleMenuPermitDTO;
 import cn.icexmoon.oaservice.entity.Role;
+import cn.icexmoon.oaservice.entity.User;
 import cn.icexmoon.oaservice.mapper.RoleMapper;
 import cn.icexmoon.oaservice.service.RoleService;
 import cn.icexmoon.oaservice.util.Result;
@@ -104,27 +105,41 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role>
                 continue;
             }
             for (Role.MenuPermission menuPermission : menuPermissions) {
-                if (!mergedMenuPermissions.containsKey(menuPermission.getMenuId())){
+                if (!mergedMenuPermissions.containsKey(menuPermission.getMenuId())) {
                     mergedMenuPermissions.put(menuPermission.getMenuId(), menuPermission);
-                }
-                else{
+                } else {
                     Role.MenuPermission currentMenuPermission = mergedMenuPermissions.get(menuPermission.getMenuId());
-                    if (BooleanUtil.isTrue(menuPermission.getView())){
+                    if (BooleanUtil.isTrue(menuPermission.getView())) {
                         currentMenuPermission.setView(true);
                     }
-                    if (BooleanUtil.isTrue(menuPermission.getEdit())){
+                    if (BooleanUtil.isTrue(menuPermission.getEdit())) {
                         currentMenuPermission.setEdit(true);
                     }
-                    if (BooleanUtil.isTrue(menuPermission.getDelete())){
+                    if (BooleanUtil.isTrue(menuPermission.getDelete())) {
                         currentMenuPermission.setDelete(true);
                     }
-                    if (BooleanUtil.isTrue(menuPermission.getAdd())){
+                    if (BooleanUtil.isTrue(menuPermission.getAdd())) {
                         currentMenuPermission.setAdd(true);
                     }
                 }
             }
         }
         return mergedMenuPermissions;
+    }
+
+    @Override
+    public boolean isRole(@NonNull User user, @NonNull String roleKey) {
+        List<Role> roles = user.getRoles();
+        if (roles == null || roles.isEmpty()) {
+            // 没有设置任何角色
+            return false;
+        }
+        for (Role role : roles) {
+            if (role.isRole(roleKey)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

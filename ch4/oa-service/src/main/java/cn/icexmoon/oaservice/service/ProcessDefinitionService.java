@@ -1,5 +1,6 @@
 package cn.icexmoon.oaservice.service;
 
+import cn.icexmoon.oaservice.dto.KeyNameDTO;
 import cn.icexmoon.oaservice.dto.ProcessDefinitionDTO;
 import cn.icexmoon.oaservice.util.Result;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @ClassName ProcessDefinitionService
@@ -70,4 +72,11 @@ public interface ProcessDefinitionService {
      * @return 成功/失败
      */
     Result<Void> delete(String deploymentId, Boolean force);
+
+    /**
+     * 获取流程定义的 key 列表
+     *
+     * @return key 列表
+     */
+    Result<List<KeyNameDTO>> getKeys();
 }

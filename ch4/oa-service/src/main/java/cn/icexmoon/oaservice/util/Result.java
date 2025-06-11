@@ -47,4 +47,8 @@ public class Result<T> {
     public static <T> Result<T> fail(T data, String message) {
         return new Result<>(false, message, data);
     }
+
+    public static <T> Result<T> fail(Class<T> cls, String message) {
+        return new Result<>(false, message, null);
+    }
 }

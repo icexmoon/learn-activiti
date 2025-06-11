@@ -1,11 +1,13 @@
 package cn.icexmoon.oaservice.service;
 
 import cn.icexmoon.oaservice.entity.ApplyProcess;
+import cn.icexmoon.oaservice.entity.User;
 import cn.icexmoon.oaservice.util.Result;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 70748
@@ -52,4 +54,28 @@ public interface ApplyProcessService extends IService<ApplyProcess> {
      * @return 成功/失败
      */
     Result<Void> edit(ApplyProcess applyProcess);
+
+    /**
+     * 返回指定用户可以提交的申请流
+     *
+     * @param user 指定用户
+     * @return 可以提交申请的申请流
+     */
+    Result<List<ApplyProcess>> listCanApply(User user);
+
+    /**
+     * 删除申请流
+     *
+     * @param id 申请流id
+     * @return 成功/失败
+     */
+    Result<Void> del(Long id);
+
+    /**
+     * 获取申请流详情
+     *
+     * @param id 申请流id
+     * @return 申请流详情
+     */
+    Result<ApplyProcess> getApplyProcess(Long id);
 }
