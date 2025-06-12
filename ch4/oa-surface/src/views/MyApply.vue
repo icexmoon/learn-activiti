@@ -68,6 +68,9 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import request from '@/util/request'
+import { useRouter } from 'vue-router'
+
+const router = useRouter();
 
 // 搜索表单数据
 const searchForm = reactive({
@@ -162,7 +165,9 @@ const handleCurrentChange = (val) => {
 // 查看申请详情
 const viewApplication = (row) => {
   // 这里可以添加跳转到详细页面的逻辑
-  console.log('查看申请详情:', row)
+  router.push({
+    path: '/ViewForm/' + row.id
+  });
 }
 
 // 页面加载时获取数据
