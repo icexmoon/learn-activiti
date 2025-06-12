@@ -45,4 +45,12 @@ public interface ApplyInstanceService extends IService<ApplyInstance> {
      * @return 申请流实例的分页信息
      */
     IPage<ApplyInstance> queryPage(Long pageNum, Long pageSize, Long applyProcessId, Date beginDate, Date endDate, Long userId);
+
+    /**
+     * 获取申请实例的详细信息
+     *
+     * @param applyInstanceId 申请实例id
+     * @return 申请实例详细信息
+     */
+    ApplyInstance getApplyInstance(Long applyInstanceId);
 }

@@ -50,6 +50,11 @@ public class PositionServiceImpl extends ServiceImpl<PositionMapper, Position>
         }
         return position.getName();
     }
+
+    @Override
+    public Position getPositionByKey(String approvalPositionKey) {
+        return this.getOne(new QueryWrapper<Position>().eq("`key`", approvalPositionKey));
+    }
 }
 
 

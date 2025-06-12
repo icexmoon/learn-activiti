@@ -96,6 +96,14 @@ public class DeptVirtualUserServiceImpl extends ServiceImpl<DeptVirtualUserMappe
     public boolean removeByDeptIds(Set<Long> allSubDeptIds) {
         return this.remove(new QueryWrapper<DeptVirtualUser>().in("dept_id", allSubDeptIds));
     }
+
+    @Override
+    public List<Long> getVirtualUserIds(Long deptId, Integer positionId) {
+        List<DeptVirtualUser> deptVirtualUsers = this.list(new QueryWrapper<DeptVirtualUser>()
+                .eq("dept_id", deptId)
+                .eq("position_id", positionId));
+        return deptVirtualUsers.stream().map(dvu -> dvu.getUserId()).collect(Collectors.toList());
+    }
 }
 
 

@@ -96,4 +96,22 @@ public class DeptTree {
         }
         return findNode.getValue();
     }
+
+    /**
+     * 获取一个部门的父部门
+     *
+     * @param deptId 子部门id
+     * @return 父部门
+     */
+    public Department getParent(long deptId) {
+        Node<Department> node = this.tree.findNode(n -> n.getValue().getId().equals(deptId));
+        if (node == null) {
+            return null;
+        }
+        Node<Department> nodeParent = node.getParent();
+        if (nodeParent == null){
+            return null;
+        }
+        return nodeParent.getValue();
+    }
 }

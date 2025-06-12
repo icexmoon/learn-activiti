@@ -28,7 +28,17 @@ public class InterfaceServiceImpl extends ServiceImpl<InterfaceMapper, Interface
         QueryWrapper<Interface> queryWrapper = new QueryWrapper<>();
         queryWrapper.likeRight("path", requestURI)
                 .eq("method", method);
-        return this.list(queryWrapper);
+        List<Interface> list = this.list(queryWrapper);
+        if (list.isEmpty()) {
+            // 尝试匹配使用路径参数的接口，比如`/apply/apply_process/{id}`
+            // 截取路径，去除路径参数
+            int lastIndexOf = requestURI.lastIndexOf("/");
+            requestURI = requestURI.substring(0, lastIndexOf);
+            list = this.list(new QueryWrapper<Interface>()
+                    .eq("path",requestURI + "/{id}")
+                    .eq("method", method));
+        }
+        return list;
     }
 
     @Override

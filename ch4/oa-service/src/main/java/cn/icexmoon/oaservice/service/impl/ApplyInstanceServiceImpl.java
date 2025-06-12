@@ -1,5 +1,6 @@
 package cn.icexmoon.oaservice.service.impl;
 
+import cn.icexmoon.activitiutil.ActivitiUtils;
 import cn.icexmoon.oaservice.dto.ApplyAddDTO;
 import cn.icexmoon.oaservice.dto.UserInfoDTO;
 import cn.icexmoon.oaservice.entity.ApplyForm;
@@ -18,10 +19,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.NonNull;
+import org.activiti.engine.ProcessEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,8 +44,11 @@ public class ApplyInstanceServiceImpl extends ServiceImpl<ApplyInstanceMapper, A
     private ApplyFormService applyFormService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ProcessEngine processEngine;
 
     @Override
+    @Transactional
     public Result<Long> add(@NonNull ApplyAddDTO dto, @NonNull User user) {
         ApplyProcess applyProcess = applyProcessService.getById(dto.getApplyProcessId());
         if (applyProcess == null) {
@@ -72,6 +79,13 @@ public class ApplyInstanceServiceImpl extends ServiceImpl<ApplyInstanceMapper, A
         applyInstance.setCreateTime(new Date());
         boolean saved = this.save(applyInstance);
         if (saved) {
+            // 启动关联的 activiti 工作流
+            ActivitiUtils activitiUtils = new ActivitiUtils(processEngine);
+            Map<String, Object> vars = new HashMap<>();
+            vars.put("applier", applyInstance.getUserId().toString());
+            vars.put("days", applyInstance.getFormData().getExtraData().get("days"));
+            vars.put("budget",applyInstance.getFormData().getExtraData().get("budget"));
+            activitiUtils.startAndNext(applyInstance.getProcessKey(), applyInstance.getId(), vars);
             return Result.success(applyInstance.getId());
         }
         return Result.fail(0L, "添加申请流实例失败");
@@ -109,6 +123,14 @@ public class ApplyInstanceServiceImpl extends ServiceImpl<ApplyInstanceMapper, A
         Page<ApplyInstance> pageData = this.page(page, queryWrapper);
         fillApplyProcessInfo(pageData.getRecords());
         return pageData;
+    }
+
+    @Override
+    public ApplyInstance getApplyInstance(Long applyInstanceId) {
+        ApplyInstance applyInstance = this.getById(applyInstanceId);
+        ApplyForm applyForm = applyFormService.getById(applyInstance.getFormId());
+        applyInstance.setApplyForm(applyForm);
+        return applyInstance;
     }
 
     /**

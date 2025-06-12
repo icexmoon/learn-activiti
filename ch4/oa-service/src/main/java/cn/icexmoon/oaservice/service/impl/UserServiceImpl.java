@@ -16,12 +16,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +40,62 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private InterfaceService interfaceService;
     @Autowired
     private MenuInterfaceService menuInterfaceService;
+    @Autowired
+    private DeptVirtualUserService deptVirtualUserService;
+    @Autowired
+    @Lazy
+    private UserService userService;
+
+    @Override
+    public List<User> matchApprovalUsers(@NonNull Long applier, @NonNull Integer approvalPositionId) {
+        // 获取申请人的部门信息
+        User user = this.getById(applier);
+        if (user.getDeptId() == null) {
+            return Collections.emptyList();
+        }
+        Long deptId = user.getDeptId();
+        return findApprovalUsersByDept(applier, approvalPositionId, deptId);
+    }
+
+    @Override
+    public List<User> matchApprovalUsers(Long applier, String approvalPositionKey) {
+        Position position = positionService.getPositionByKey(approvalPositionKey);
+        if (position == null) {
+            throw new RuntimeException("匹配不到职位信息");
+        }
+        return this.matchApprovalUsers(applier, position.getId());
+    }
+
+    @Override
+    public List<User> getUsersByDeptId(Long deptId) {
+        List<User> users = this.list(new QueryWrapper<User>()
+                .eq("dept_id", deptId));
+        return users;
+    }
+
+    private List<User> findApprovalUsersByDept(Long applier, Integer approvalPositionId, Long deptId) {
+        // 在该员工所属部门查找具有目标职位的人
+        List<User> users = this.list(new QueryWrapper<User>()
+                .eq("dept_id", deptId)
+                .eq("position_id", approvalPositionId)
+                .ne("id", applier));
+        if (!users.isEmpty()) {
+            return users;
+        }
+        // 没有找到，查找该部门下虚拟职位的人
+        List<Long> userIds = deptVirtualUserService.getVirtualUserIds(deptId, approvalPositionId);
+        if (!userIds.isEmpty()) {
+            users = this.listByIds(userIds);
+            return users;
+        }
+        // 部门的虚拟职位也没有找到，向上查找父部门
+        Department parentDept = departmentService.getParent(deptId);
+        if (parentDept == null) {
+            return Collections.emptyList();
+        }
+        // 存在父部门，递归查询
+        return findApprovalUsersByDept(applier, approvalPositionId, parentDept.getId());
+    }
 
     @Override
     public User getByPhone(String phone) {
@@ -269,6 +323,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         String positionName = positionService.getPositionName(user.getPositionId());
         userDTO.setPositionName(positionName);
         return Result.success(userDTO);
+    }
+
+    @Override
+    public List<User> getFinanceApprovalUsers() {
+        Department financeDepartment = departmentService.getFinanceDepartment();
+        if (financeDepartment == null) {
+            throw new RuntimeException("缺少财务部门");
+        }
+        return userService.getUsersByDeptId(financeDepartment.getId());
     }
 }
 

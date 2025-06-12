@@ -30,4 +30,12 @@ public interface PositionService extends IService<Position> {
      * @return 职位名称
      */
     String getPositionName(Integer positionId);
+
+    /**
+     * 根据职位key获取职位信息
+     *
+     * @param approvalPositionKey 职位key
+     * @return 职位信息
+     */
+    Position getPositionByKey(String approvalPositionKey);
 }

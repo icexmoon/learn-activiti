@@ -53,4 +53,19 @@ public interface DepartmentService extends IService<Department> {
      * @return 完整部门名称
      */
     String getFullDeptName(Long deptId);
+
+    /**
+     * 获取父部门
+     *
+     * @param deptId 子部门id
+     * @return 父部门
+     */
+    Department getParent(Long deptId);
+
+    /**
+     * 获取财务部
+     *
+     * @return 财务部
+     */
+    Department getFinanceDepartment();
 }

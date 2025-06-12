@@ -1,6 +1,7 @@
 package cn.icexmoon.oaservice.controller;
 
 import cn.icexmoon.oaservice.dto.ApplyAddDTO;
+import cn.icexmoon.oaservice.entity.ApplyInstance;
 import cn.icexmoon.oaservice.entity.ApplyProcess;
 import cn.icexmoon.oaservice.entity.User;
 import cn.icexmoon.oaservice.service.ApplyInstanceService;
@@ -47,5 +48,11 @@ public class ApplyController {
     @PostMapping("/add")
     public Result<Long> apply(@RequestBody ApplyAddDTO dto) {
         return applyInstanceService.add(dto, UserHolder.getUser());
+    }
+
+    @GetMapping("/{applyInstanceId}")
+    public Result<ApplyInstance> get(@PathVariable("applyInstanceId") Long applyInstanceId) {
+        ApplyInstance applyInstance = applyInstanceService.getApplyInstance(applyInstanceId);
+        return Result.success(applyInstance);
     }
 }

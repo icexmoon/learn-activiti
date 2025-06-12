@@ -40,6 +40,10 @@ public class ApplyForm {
      * 表单 vue 源码路径
      */
     private String path;
+    /**
+     * 查看申请单时的 vue 源码路径
+     */
+    private String viewPath;
 
     /**
      * 创建表单的时间

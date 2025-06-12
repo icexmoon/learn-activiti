@@ -112,6 +112,17 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
         }
         return this.deptTree.getFullDeptName(deptId);
     }
+
+    @Override
+    public Department getParent(Long deptId) {
+        return this.deptTree.getParent(deptId);
+    }
+
+    @Override
+    public Department getFinanceDepartment() {
+        Department department = this.deptTree.findDepartment(d -> d.getName().equals("财务部"));
+        return department;
+    }
 }
 
 

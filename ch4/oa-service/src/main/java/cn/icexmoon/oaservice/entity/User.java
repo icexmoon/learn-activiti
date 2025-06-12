@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
@@ -14,10 +15,12 @@ import java.util.List;
  */
 @TableName(value = "user", autoResultMap = true)
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
     /**
      *
      */
+    @EqualsAndHashCode.Include
     @TableId(type = IdType.AUTO)
     private Long id;
 

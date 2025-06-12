@@ -1,6 +1,7 @@
 package cn.icexmoon.oaservice.entity;
 
 import cn.icexmoon.oaservice.annotation.DateTimeJsonFormat;
+import cn.icexmoon.oaservice.dto.ApplyApprovalDTO;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -9,6 +10,7 @@ import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,6 +60,8 @@ public class ApplyInstance {
      * 表单id
      */
     private Long formId;
+    @TableField(exist = false)
+    private ApplyForm applyForm;
 
     /**
      * 申请单内数据
@@ -70,4 +74,10 @@ public class ApplyInstance {
      */
     @DateTimeJsonFormat
     private Date createTime;
+
+    /**
+     * 申请实例的审批记录
+     */
+    @TableField(exist = false)
+    private List<ApplyApprovalDTO> approvalDTOS;
 }

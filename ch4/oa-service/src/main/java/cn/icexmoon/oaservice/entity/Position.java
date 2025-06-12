@@ -16,6 +16,12 @@ import lombok.*;
 @RequiredArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Position implements Comparable<Position> {
+    public static final String POSITION_KEY_ZHUGUAN = "supervisor";
+    public static final String POSITION_KEY_JINGLI = "manager";
+    public static final String POSITION_KEY_GAOJIJINGLI = "high_manager";
+    public static final String POSITION_KEY_ZONGJIAN = "director";
+    public static final String POSITION_KEY_ZONGCAI = "president";
+    public static final String POSITION_KEY_FUZONGCAI = "vice_president";
     /**
      *
      */
