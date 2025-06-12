@@ -1,5 +1,6 @@
 package cn.icexmoon.oaservice.entity;
 
+import cn.icexmoon.oaservice.annotation.DateTimeJsonFormat;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -45,6 +46,8 @@ public class ApplyInstance {
      * 申请流id
      */
     private Long applyProcessId;
+    @TableField(exist = false)
+    private ApplyProcess applyProcess;
 
     /**
      * Activiti流程key
@@ -65,5 +68,6 @@ public class ApplyInstance {
     /**
      * 申请时间
      */
+    @DateTimeJsonFormat
     private Date createTime;
 }

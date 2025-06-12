@@ -12,12 +12,19 @@ import cn.icexmoon.oaservice.service.ApplyInstanceService;
 import cn.icexmoon.oaservice.service.ApplyProcessService;
 import cn.icexmoon.oaservice.service.UserService;
 import cn.icexmoon.oaservice.util.Result;
+import cn.icexmoon.oaservice.util.TimeUtils;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author 70748
@@ -80,6 +87,44 @@ public class ApplyInstanceServiceImpl extends ServiceImpl<ApplyInstanceMapper, A
             return true;
         }
         return false;
+    }
+
+    @Override
+    public IPage<ApplyInstance> queryPage(Long pageNum, Long pageSize, Long applyProcessId, Date beginDate, Date endDate, Long userId) {
+        Page<ApplyInstance> page = new Page<>(pageNum, pageSize);
+        QueryWrapper<ApplyInstance> queryWrapper = new QueryWrapper<>();
+        if (applyProcessId != null) {
+            queryWrapper.eq("apply_process_id", applyProcessId);
+        }
+        if (beginDate != null) {
+            queryWrapper.ge("create_time", TimeUtils.toStartTime(beginDate));
+        }
+        if (endDate != null) {
+            queryWrapper.le("create_time", TimeUtils.toEndTime(endDate));
+        }
+        if (userId != null) {
+            queryWrapper.eq("user_id", userId);
+        }
+        queryWrapper.orderByDesc("create_time");
+        Page<ApplyInstance> pageData = this.page(page, queryWrapper);
+        fillApplyProcessInfo(pageData.getRecords());
+        return pageData;
+    }
+
+    /**
+     * 填充申请流相关信息
+     *
+     * @param records 申请流实例集合
+     */
+    private void fillApplyProcessInfo(List<ApplyInstance> records) {
+        if (records == null || records.isEmpty()) {
+            return;
+        }
+        List<Long> applyProcessIds = records.stream().map(r -> r.getApplyProcessId()).toList();
+        Map<Long, ApplyProcess> applyProcessMap = applyProcessService.listByIds(applyProcessIds).stream().collect(Collectors.toMap(ap -> ap.getId(), ap -> ap));
+        for (ApplyInstance record : records) {
+            record.setApplyProcess(applyProcessMap.get(record.getApplyProcessId()));
+        }
     }
 
 }

@@ -1,5 +1,7 @@
 package cn.icexmoon.oaservice.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -12,6 +14,12 @@ import java.util.Date;
  * @Version 1.0
  */
 public class TimeUtils {
+    public static String convert2timeStr(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(date);
+    }
+
+
     /**
      * 将日期转换为时间
      *
@@ -50,5 +58,11 @@ public class TimeUtils {
         LocalDateTime endTime = TimeUtils.dateToLocalDateTime(date);
         endTime = endTime.withHour(23).withMinute(59).withSecond(59).withNano(0);
         return endTime;
+    }
+
+    public static Date convert2DateTime(String text) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = sdf.parse(text); // 解析为系统默认时区
+        return date;
     }
 }
