@@ -116,12 +116,15 @@
 <script>
 import { ref, onMounted, inject } from "vue";
 import request from "@/util/request";
+import { ElMessage } from "element-plus";
+import { useRouter } from "vue-router";
 
 export default {
   name: "BusinessTravelApply",
   setup() {
+    const router = useRouter();
     const form = ref(null);
-    let formData = ref({
+    const formData = ref({
       startDate: "",
       endDate: "",
       days: 0,
@@ -130,7 +133,7 @@ export default {
       remark: "",
     });
     const userInfo = inject("userInfo");
-    formData = userInfo;
+    const applyProcessId = inject("applyProcessId");
 
     // 表单验证规则
     const rules = {
@@ -138,10 +141,19 @@ export default {
     };
 
     // 提交表单
-    const submitForm = () => {
+    const submitForm = async () => {
       // 这里可以添加表单提交逻辑
+      console.log(applyProcessId);
       console.log("提交表单数据:", formData.value);
       // 实际应用中，这里应该调用API提交数据
+      const resp = await request.post("/api/apply/add", {
+        applyProcessId: applyProcessId,
+        extraData: formData.value,
+      });
+      if (resp.success) {
+        ElMessage.success("提交成功");
+        router.push("/apply/list");
+      }
     };
 
     // 重置表单

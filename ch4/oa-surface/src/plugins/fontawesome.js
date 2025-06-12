@@ -24,7 +24,10 @@ import {
   faSearch,
   faMinus,
   faUserShield,
-  faDiagramProject
+  faDiagramProject,
+  faPaperPlane,
+  faTableList,
+  faRightToBracket,
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
@@ -51,7 +54,10 @@ library.add(
   faSearch,
   faMinus,
   faUserShield,
-  faDiagramProject
+  faDiagramProject,
+  faPaperPlane,
+  faTableList,
+  faRightToBracket,
 )
 
 export default FontAwesomeIcon 

@@ -17,6 +17,7 @@ import ApplyList from '../views/ApplyList.vue'
 import BusinessTravelApplyVue from '@/views/BusinessTravelApply.vue'
 import ApplyFormVue from '@/views/ApplyForm.vue'
 import FormManagementVue from '@/views/FormManagement.vue'
+import MyApply from '../views/MyApply.vue'
 
 const routes = [
   { path: '/login', component: Login },
@@ -41,6 +42,10 @@ const routes = [
       { path: 'businessTravelApply', component: BusinessTravelApplyVue },
       { path: 'applyForm/:applyProcessId', component: ApplyFormVue },
       { path: 'formManagement', component: FormManagementVue },
+      {
+        path: 'myApply',
+        component: MyApply
+      },
     ]
   }
 ]

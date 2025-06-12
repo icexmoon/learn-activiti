@@ -31,6 +31,7 @@ export default {
       }
     };
     provide("userInfo", userInfo);
+    provide("applyProcessId", applyProcessId);
 
 
     // 获取表单信息
