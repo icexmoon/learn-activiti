@@ -26,6 +26,7 @@ export default {
     const fetchApplyInfo = async () => {
       const res = await request.get("/api/apply/" + applyInstanceId);
       applyInfo.value = res.data;
+      console.log("applyInfo", applyInfo.value);
     };
     onMounted(async () => {
       await fetchApplyInfo();

@@ -1,15 +1,8 @@
 <template>
   <div class="business-travel-form">
-    <h2 class="form-title">
-      出差申请单
-    </h2>
+    <h2 class="form-title">出差申请单</h2>
 
-    <el-form
-      ref="form"
-      :model="formData"
-      label-width="120px"
-      label-position="right"
-    >
+    <el-form ref="form" :model="formData" label-width="120px" label-position="right">
       <el-row :gutter="20">
         <el-col :span="12">
           <el-form-item label="申请人">
@@ -83,7 +76,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="预算金额">
-            <el-input-number v-model="formData.extraData.budget" :min="0" disabled/>
+            <el-input-number v-model="formData.extraData.budget" :min="0" disabled />
             <span class="unit">元</span>
           </el-form-item>
         </el-col>
@@ -108,21 +101,79 @@
           disabled
         />
       </el-form-item>
+      <el-form-item label="审批">
+        <el-table :data="approvalComments" style="width: 100%">
+          <el-table-column prop="title" label="审批环节" width="100" />
+          <el-table-column prop="userName" label="审批人" width="100" />
+          <el-table-column prop="time" label="审批时间" width="180" />
+          <el-table-column label="审批意见" width="150">
+            <template #default="scope">
+              <div v-if="scope.row.canApproval === true">
+                <el-input
+                  v-model="approvalResult.opinion"
+                  type="textarea"
+                  :rows="3"
+                  placeholder="请输入审批意见"
+                />
+              </div>
+              <div v-else>{{ scope.row.opinion }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column label="审批状态" width="100">
+            <template #default="scope">
+              <div v-if="scope.row.canApproval === true">
+                <el-row
+                  ><el-button type="success" @click="approval(scope.row.taskId, true)"
+                    >同意</el-button
+                  ></el-row
+                >
+                <el-row
+                  ><el-button type="danger" @click="approval(scope.row.taskId, false)"
+                    >驳回</el-button
+                  ></el-row
+                >
+              </div>
+              <div v-else>{{ scope.row.statusText }}</div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
-import {inject, ref} from "vue";
+import { inject, ref } from "vue";
+import request from "@/util/request";
 export default {
   name: "BusinessTravelApply",
   setup() {
-    const applyInfo = inject('applyInfo')
+    const applyInfo = inject("applyInfo");
     const formData = applyInfo.value.formData;
-    console.log(formData)
-    return { formData }
-  }
-}
+    const approvalComments = applyInfo.value.approvalDTOS;
+    console.log("approvalComments", approvalComments);
+    console.log(formData);
+    const approvalResult = ref({ opinion: "", agree: false });
+    const approval = (taskId, agree) => {
+      console.log(taskId, agree);
+      approvalResult.value.agree = agree;
+      request
+        .post("/api/apply/approval", {
+          taskId,
+          agree,
+          opinion: approvalResult.value.opinion,
+          applyInstanceId: applyInfo.value.id,
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.success) {
+            window.location.reload();
+          }
+        });
+    };
+    return { formData, approvalComments, approvalResult, approval };
+  },
+};
 </script>
 
 <style scoped>
