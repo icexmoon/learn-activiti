@@ -2,10 +2,8 @@ package cn.icexmoon.oaservice.service.impl;
 
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.icexmoon.oaservice.entity.ApplyForm;
-import cn.icexmoon.oaservice.entity.ApplyProcess;
-import cn.icexmoon.oaservice.entity.Role;
-import cn.icexmoon.oaservice.entity.User;
+import cn.icexmoon.oaservice.dto.KeyNameDTO;
+import cn.icexmoon.oaservice.entity.*;
 import cn.icexmoon.oaservice.mapper.ApplyProcessMapper;
 import cn.icexmoon.oaservice.service.ApplyFormService;
 import cn.icexmoon.oaservice.service.ApplyProcessService;
@@ -21,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -142,6 +141,17 @@ public class ApplyProcessServiceImpl extends ServiceImpl<ApplyProcessMapper, App
             }
         }
         return Result.success(applyProcess);
+    }
+
+    @Override
+    public List<KeyNameDTO> getApprovalStatus() {
+        List<KeyNameDTO> keyNameDTOS = new ArrayList<>();
+        ApplyInstance.ApprovalStatus[] statuses = ApplyInstance.ApprovalStatus.values();
+        for (ApplyInstance.ApprovalStatus status : statuses) {
+            KeyNameDTO keyNameDTO = new KeyNameDTO(status.name(), status.getDesc());
+            keyNameDTOS.add(keyNameDTO);
+        }
+        return keyNameDTOS;
     }
 
     private static String getPositionIdsStr(ApplyProcess applyProcess) {

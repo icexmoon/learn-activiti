@@ -1,5 +1,6 @@
 package cn.icexmoon.oaservice.controller;
 
+import cn.icexmoon.oaservice.dto.KeyNameDTO;
 import cn.icexmoon.oaservice.entity.ApplyProcess;
 import cn.icexmoon.oaservice.service.ApplyProcessService;
 import cn.icexmoon.oaservice.util.Result;
@@ -9,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @ClassName ApplyProcessController
@@ -69,5 +71,11 @@ public class ApplyProcessController {
     @GetMapping("/{id}")
     public Result<ApplyProcess> get(@PathVariable Long id) {
         return applyProcessService.getApplyProcess(id);
+    }
+
+    @GetMapping("/status/list")
+    public Result<List<KeyNameDTO>> getStatusList() {
+        List<KeyNameDTO> statuses = applyProcessService.getApprovalStatus();
+        return Result.success(statuses);
     }
 }

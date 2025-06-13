@@ -1,6 +1,7 @@
 package cn.icexmoon.oaservice.controller;
 
 import cn.icexmoon.oaservice.dto.ApplyAddDTO;
+import cn.icexmoon.oaservice.dto.ApprovalResultDTO;
 import cn.icexmoon.oaservice.entity.ApplyInstance;
 import cn.icexmoon.oaservice.entity.ApplyProcess;
 import cn.icexmoon.oaservice.entity.User;
@@ -54,5 +55,15 @@ public class ApplyController {
     public Result<ApplyInstance> get(@PathVariable("applyInstanceId") Long applyInstanceId) {
         ApplyInstance applyInstance = applyInstanceService.getApplyInstance(applyInstanceId);
         return Result.success(applyInstance);
+    }
+
+    @PostMapping("/approval")
+    public Result<Void> approval(@RequestBody ApprovalResultDTO dto) {
+        dto.setUserId(UserHolder.getUser().getId());
+        boolean result = applyInstanceService.approval(dto);
+        if (result){
+            return Result.success();
+        }
+        return Result.fail("审批失败");
     }
 }

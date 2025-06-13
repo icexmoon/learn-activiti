@@ -1,5 +1,6 @@
 package cn.icexmoon.oaservice.service;
 
+import cn.icexmoon.oaservice.dto.KeyNameDTO;
 import cn.icexmoon.oaservice.entity.ApplyProcess;
 import cn.icexmoon.oaservice.entity.User;
 import cn.icexmoon.oaservice.util.Result;
@@ -78,4 +79,11 @@ public interface ApplyProcessService extends IService<ApplyProcess> {
      * @return 申请流详情
      */
     Result<ApplyProcess> getApplyProcess(Long id);
+
+    /**
+     * 获取审批状态列表
+     *
+     * @return 审批状态列表
+     */
+    List<KeyNameDTO> getApprovalStatus();
 }

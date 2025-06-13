@@ -1,6 +1,7 @@
 package cn.icexmoon.oaservice.service;
 
 import cn.icexmoon.oaservice.dto.ApplyAddDTO;
+import cn.icexmoon.oaservice.dto.ApprovalResultDTO;
 import cn.icexmoon.oaservice.entity.ApplyInstance;
 import cn.icexmoon.oaservice.entity.User;
 import cn.icexmoon.oaservice.util.Result;
@@ -53,4 +54,26 @@ public interface ApplyInstanceService extends IService<ApplyInstance> {
      * @return 申请实例详细信息
      */
     ApplyInstance getApplyInstance(Long applyInstanceId);
+
+    /**
+     * 查询审批分页信息
+     *
+     * @param pageNum        页码
+     * @param pageSize       页宽
+     * @param applyProcessId 申请流id
+     * @param approvalUserId 审批人
+     * @param status         审批状态
+     * @return
+     */
+    IPage<ApplyInstance> queryApprovalPage(Long pageNum, Long pageSize,
+                                           Long applyProcessId,
+                                           Long approvalUserId,
+                                           ApplyInstance.ApprovalStatus status);
+
+    /**
+     * 审批
+     * @param dto 审批信息
+     * @return 审批结果
+     */
+    boolean approval(ApprovalResultDTO dto);
 }

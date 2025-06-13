@@ -2,12 +2,14 @@ package cn.icexmoon.oaservice.entity;
 
 import cn.icexmoon.oaservice.annotation.DateTimeJsonFormat;
 import cn.icexmoon.oaservice.dto.ApplyApprovalDTO;
+import cn.icexmoon.oaservice.util.IDescEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
+import lombok.NonNull;
 
 import java.util.Date;
 import java.util.List;
@@ -31,6 +33,42 @@ public class ApplyInstance {
         private String fullDeptName; //完整部门名称
         private String positionName; //职位名称
         private Map<String, Object> extraData; // 其它数据
+    }
+
+    /**
+     * 审批状态
+     */
+    public enum ApprovalStatus implements IDescEnum<Integer> {
+        PENDING_APPROVAL(0,"待审批"),
+        UNDER_APPROVAL(1,"审批中"),
+        PASSED(2,"已通过"),
+        FAILED(3,"未通过");
+
+        ApprovalStatus(Integer value, String desc) {
+            this.value = value;
+            this.desc = desc;
+        }
+        private Integer value;
+        private String desc;
+
+        public static ApprovalStatus valueOf(@NonNull Integer statusVal) {
+            for (ApprovalStatus value : ApprovalStatus.values()) {
+                if (statusVal.equals(value.getValue())) {
+                    return value;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public String getDesc() {
+            return this.desc;
+        }
+
+        @Override
+        public Integer getValue() {
+            return this.value;
+        }
     }
 
     /**
@@ -80,4 +118,14 @@ public class ApplyInstance {
      */
     @TableField(exist = false)
     private List<ApplyApprovalDTO> approvalDTOS;
+
+    /**
+     * Activiti 工作流实例id
+     */
+    private String processInstanceId;
+
+    /**
+     * 审批状态
+     */
+    private ApprovalStatus status;
 }
