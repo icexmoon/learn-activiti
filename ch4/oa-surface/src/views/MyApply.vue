@@ -42,6 +42,7 @@
       <el-table-column prop="applyProcess.name" label="流程名称" />
       <el-table-column prop="processKey" label="流程标识" />
       <el-table-column prop="createTime" label="申请时间" width="180" />
+      <el-table-column prop="statusText" label="状态" width="100"/> 
       <el-table-column label="操作" width="120" fixed="right">
         <template #default="{ row }">
           <el-button type="primary" @click="viewApplication(row)" plain>查看</el-button>
