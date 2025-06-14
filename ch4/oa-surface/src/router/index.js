@@ -19,6 +19,7 @@ import ApplyFormVue from '@/views/ApplyForm.vue'
 import FormManagementVue from '@/views/FormManagement.vue'
 import MyApply from '../views/MyApply.vue'
 import ViewFormVue from '@/views/ViewForm.vue'
+import ApprovalHistoryVue from '@/views/ApprovalHistory.vue'
 
 const routes = [
   { path: '/login', component: Login },
@@ -44,7 +45,8 @@ const routes = [
       { path: 'applyForm/:applyProcessId', component: ApplyFormVue },
       { path: 'formManagement', component: FormManagementVue },
       { path: 'myApply', component: MyApply },
-      { path: 'viewForm/:applyInstanceId', component: ViewFormVue }
+      { path: 'viewForm/:applyInstanceId', component: ViewFormVue },
+      { path: 'approvalHistory', component: ApprovalHistoryVue }
     ]
   }
 ]
