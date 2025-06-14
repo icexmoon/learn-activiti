@@ -128,4 +128,9 @@ public class ApplyInstance {
      * 审批状态
      */
     private ApprovalStatus status;
+    /**
+     * 审批状态文字描述
+     */
+    @TableField(exist = false)
+    private String statusText;
 }

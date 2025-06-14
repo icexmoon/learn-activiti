@@ -129,6 +129,14 @@ public class ApplyInstanceServiceImpl extends ServiceImpl<ApplyInstanceMapper, A
         }
         queryWrapper.orderByDesc("create_time");
         Page<ApplyInstance> pageData = this.page(page, queryWrapper);
+        // 增加状态描述
+        if (page.getRecords() != null && page.getRecords().size() > 0) {
+            for (ApplyInstance record : page.getRecords()) {
+                if (record.getStatus() != null) {
+                    record.setStatusText(record.getStatus().getDesc());
+                }
+            }
+        }
         fillApplyProcessInfo(pageData.getRecords());
         return pageData;
     }
@@ -243,6 +251,7 @@ public class ApplyInstanceServiceImpl extends ServiceImpl<ApplyInstanceMapper, A
     }
 
     @Override
+    @Transactional
     public boolean approval(ApprovalResultDTO dto) {
         Map<String, Object> vars = new HashMap<>();
         if (BooleanUtil.isTrue(dto.getAgree())) {
@@ -253,7 +262,12 @@ public class ApplyInstanceServiceImpl extends ServiceImpl<ApplyInstanceMapper, A
             vars.put("opinion", dto.getOpinion());
             vars.put("status", ApplyInstance.ApprovalStatus.PASSED.getValue());
             activitiUtils.completeTaskWithCheck(dto.getUserId().toString(), dto.getTaskId(), vars);
-            this.changeStatus(dto.getApplyInstanceId(), ApplyInstance.ApprovalStatus.UNDER_APPROVAL);
+            // 如果申请实例状态是待审批，修改状态为审批中
+            ApplyInstance applyInstance = this.getById(dto.getApplyInstanceId());
+            if (applyInstance != null && applyInstance.getStatus() != null
+                    && applyInstance.getStatus().equals(ApplyInstance.ApprovalStatus.PENDING_APPROVAL)) {
+                this.changeStatus(dto.getApplyInstanceId(), ApplyInstance.ApprovalStatus.UNDER_APPROVAL);
+            }
         } else {
             if (dto.getOpinion() == null || dto.getOpinion().isEmpty()) {
                 dto.setOpinion("不同意");
@@ -266,12 +280,28 @@ public class ApplyInstanceServiceImpl extends ServiceImpl<ApplyInstanceMapper, A
         return true;
     }
 
+    @Override
+    public void endProcess(String processInstanceId) {
+        // 修改申请实例状态为已通过
+        ApplyInstance applyInstance = this.getApplyInstanceByProcessInstanceId(processInstanceId);
+        if (applyInstance == null) {
+            return;
+        }
+        this.changeStatus(applyInstance.getId(), ApplyInstance.ApprovalStatus.PASSED);
+    }
+
+    private ApplyInstance getApplyInstanceByProcessInstanceId(String processInstanceId) {
+        ApplyInstance applyInstance = this.getOne(new QueryWrapper<ApplyInstance>().eq("process_instance_id", processInstanceId));
+        return applyInstance;
+    }
+
     /**
      * 修改申请流实例状态
+     *
      * @param applyInstanceId 申请流实例id
-     * @param status 状态
+     * @param status          状态
      */
-    private void changeStatus(Long applyInstanceId, ApplyInstance.ApprovalStatus status){
+    private void changeStatus(Long applyInstanceId, ApplyInstance.ApprovalStatus status) {
         ApplyInstance entity = new ApplyInstance();
         entity.setId(applyInstanceId);
         entity.setStatus(status);

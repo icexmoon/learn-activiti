@@ -20,7 +20,11 @@
     </userTask>
     <sequenceFlow id="sid-042cbdec-c222-4174-8779-8e7d4f0e494c" sourceRef="sid-4d3d4ca0-0345-44d3-995b-41461603b491" targetRef="sid-69379e9c-1011-4477-9ce2-4c076e412da5"/>
     <sequenceFlow id="sid-492eaddc-719a-43c1-8878-19b19f4c6d66" sourceRef="sid-113caa7f-ce80-46a3-8ac3-7d3e90e09b3b" targetRef="sid-bc7f3b44-aecc-45ad-8b15-dc957c501e78"/>
-    <endEvent id="sid-c35c58e5-ce4e-4363-84fb-449b3aadd522"/>
+    <endEvent id="sid-c35c58e5-ce4e-4363-84fb-449b3aadd522">
+      <extensionElements>
+        <activiti:executionListener event="end" delegateExpression="${processEndListener}"/>
+      </extensionElements>
+    </endEvent>
     <sequenceFlow id="sid-a761ebf7-431a-4d36-8888-67027440fa10" sourceRef="sid-114f0d95-1444-4c5a-b796-db94953f865f" targetRef="sid-c35c58e5-ce4e-4363-84fb-449b3aadd522"/>
     <exclusiveGateway id="sid-69379e9c-1011-4477-9ce2-4c076e412da5"/>
     <sequenceFlow id="sid-919b710b-8f72-4a86-9044-29eed268b9ac" sourceRef="sid-69379e9c-1011-4477-9ce2-4c076e412da5" targetRef="sid-113caa7f-ce80-46a3-8ac3-7d3e90e09b3b" name="三天以上由高级经理审批">

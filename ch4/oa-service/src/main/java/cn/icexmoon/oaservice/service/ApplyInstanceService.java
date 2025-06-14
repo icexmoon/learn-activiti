@@ -76,4 +76,9 @@ public interface ApplyInstanceService extends IService<ApplyInstance> {
      * @return 审批结果
      */
     boolean approval(ApprovalResultDTO dto);
+
+    /**
+     * 申请流正常结束
+     */
+    void endProcess(String processInstanceId);
 }
