@@ -2,8 +2,10 @@ package cn.icexmoon.oaservice.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 /**
@@ -30,6 +32,25 @@ public class TimeUtils {
         return date.toInstant()                    // Date → Instant（时间戳）
                 .atZone(ZoneId.systemDefault())    // 附加系统默认时区 → ZonedDateTime
                 .toLocalDateTime();                // 剥离时区 → LocalDateTime
+    }
+
+    /**
+     * 将 LocalDateTime 类型转换为 Date 类型
+     * @param localDateTime LocalDateTime 类型
+     * @return Date 类型
+     */
+    public static Date LocaldateTimeToDate(LocalDateTime localDateTime) {
+        if (localDateTime == null) {
+            return null;
+        }
+
+        // 指定时区（默认系统时区，或明确指定如 ZoneId.of("Asia/Shanghai")）
+        ZoneId zoneId = ZoneId.of("Asia/Shanghai");
+
+        // 分步转换
+        ZonedDateTime zonedDateTime = localDateTime.atZone(zoneId);
+        Instant instant = zonedDateTime.toInstant();
+        return Date.from(instant);
     }
 
     /**

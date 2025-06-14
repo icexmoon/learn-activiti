@@ -15,6 +15,7 @@ import cn.icexmoon.oaservice.service.ApplyFormService;
 import cn.icexmoon.oaservice.service.ApplyInstanceService;
 import cn.icexmoon.oaservice.service.ApplyProcessService;
 import cn.icexmoon.oaservice.service.UserService;
+import cn.icexmoon.oaservice.util.PageUtil;
 import cn.icexmoon.oaservice.util.Result;
 import cn.icexmoon.oaservice.util.TimeUtils;
 import cn.icexmoon.oaservice.util.UserHolder;
@@ -23,6 +24,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.NonNull;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
@@ -88,6 +90,7 @@ public class ApplyInstanceServiceImpl extends ServiceImpl<ApplyInstanceMapper, A
             vars.put("applier", applyInstance.getUserId().toString());
             vars.put("days", applyInstance.getFormData().getExtraData().get("days"));
             vars.put("budget", applyInstance.getFormData().getExtraData().get("budget"));
+//            ProcessInstance processInstance = activitiUtils.start(applyInstance.getProcessKey(),applyInstance.getId().toString(), vars);
             ProcessInstance processInstance = activitiUtils.startAndNext(applyInstance.getProcessKey(), applyInstance.getId(), vars);
             // 更新申请实例表，关联工作流id
             ApplyInstance instance = new ApplyInstance();
@@ -209,10 +212,10 @@ public class ApplyInstanceServiceImpl extends ServiceImpl<ApplyInstanceMapper, A
     }
 
     @Override
-    public IPage<ApplyInstance> queryApprovalPage(Long pageNum, Long pageSize,
-                                                  Long applyProcessId,
-                                                  @NonNull Long approvalUserId,
-                                                  ApplyInstance.ApprovalStatus status) {
+    public IPage<ApplyInstance> queryPreapprovalPage(Long pageNum, Long pageSize,
+                                                     Long applyProcessId,
+                                                     @NonNull Long approvalUserId,
+                                                     ApplyInstance.ApprovalStatus status) {
         // 获取需要由指定用户审批的工作流
         List<ProcessInstance> processInstances = activitiUtils.listPendingApprovalProcessInstances(approvalUserId.toString());
         if (processInstances == null || processInstances.isEmpty()) {
@@ -231,23 +234,24 @@ public class ApplyInstanceServiceImpl extends ServiceImpl<ApplyInstanceMapper, A
             }
             return true;
         }).toList();
-        if (applyInstances.isEmpty()) {
-            return new Page<>(pageNum, pageSize);
-        }
-        long starIndex = (pageNum - 1) * pageSize;
-        long endIndex = starIndex + pageSize;
-        int total = applyInstances.size();
-        if (starIndex >= total) {
-            return new Page<>(pageNum, pageSize);
-        }
-        if (endIndex > total) {
-            endIndex = total;
-        }
-        List<ApplyInstance> pagedApplyInstances = applyInstances.subList((int) starIndex, (int) endIndex);
-        Page<ApplyInstance> pageData = new Page<>(pageNum, pageSize);
-        pageData.setRecords(pagedApplyInstances);
-        pageData.setTotal(total);
-        return pageData;
+//        if (applyInstances.isEmpty()) {
+//            return new Page<>(pageNum, pageSize);
+//        }
+//        long starIndex = (pageNum - 1) * pageSize;
+//        long endIndex = starIndex + pageSize;
+//        int total = applyInstances.size();
+//        if (starIndex >= total) {
+//            return new Page<>(pageNum, pageSize);
+//        }
+//        if (endIndex > total) {
+//            endIndex = total;
+//        }
+//        List<ApplyInstance> pagedApplyInstances = applyInstances.subList((int) starIndex, (int) endIndex);
+//        Page<ApplyInstance> pageData = new Page<>(pageNum, pageSize);
+//        pageData.setRecords(pagedApplyInstances);
+//        pageData.setTotal(total);
+//        return pageData;
+        return PageUtil.logicPage(pageNum, pageSize, applyInstances);
     }
 
     @Override
@@ -288,6 +292,38 @@ public class ApplyInstanceServiceImpl extends ServiceImpl<ApplyInstanceMapper, A
             return;
         }
         this.changeStatus(applyInstance.getId(), ApplyInstance.ApprovalStatus.PASSED);
+    }
+
+    @Override
+    public IPage<ApplyInstance> queryApprovedPage(@NonNull Long userId,
+                                                  @NonNull Long pageNum,
+                                                  @NonNull Long pageSize,
+                                                  Date beginDate,
+                                                  Date endDate,
+                                                  Long applyProcessId) {
+        List<HistoricProcessInstance> processInstances = activitiUtils.listHistoricProcessInstances(userId.toString(),
+                TimeUtils.LocaldateTimeToDate(TimeUtils.toStartTime(beginDate)),
+                TimeUtils.LocaldateTimeToDate(TimeUtils.toEndTime(endDate)));
+        if (processInstances == null || processInstances.isEmpty()) {
+            return new Page<>(pageNum, pageSize);
+        }
+        List<String> processInstanceIds = processInstances.stream().map(HistoricProcessInstance::getId).toList();
+        List<ApplyInstance> applyInstances = this.query().in("process_instance_id", processInstanceIds)
+                .list();
+        // 按搜索条件进行过滤
+        if (applyProcessId != null) {
+            applyInstances = applyInstances.stream().filter(ai -> ai.getApplyProcessId().equals(applyProcessId)).toList();
+        }
+        // 逻辑分页
+        Page<ApplyInstance> applyInstancePage = PageUtil.logicPage(pageNum, pageSize, applyInstances);
+        fillApplyProcessInfo(applyInstancePage.getRecords());
+        for (ApplyInstance record : applyInstancePage.getRecords()) {
+            ApplyInstance.ApprovalStatus status = record.getStatus();
+            if (status != null) {
+                record.setStatusText(status.getDesc());
+            }
+        }
+        return applyInstancePage;
     }
 
     private ApplyInstance getApplyInstanceByProcessInstanceId(String processInstanceId) {

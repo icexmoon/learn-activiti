@@ -56,7 +56,7 @@ public interface ApplyInstanceService extends IService<ApplyInstance> {
     ApplyInstance getApplyInstance(Long applyInstanceId);
 
     /**
-     * 查询审批分页信息
+     * 查询指定用户待审批的分页信息
      *
      * @param pageNum        页码
      * @param pageSize       页宽
@@ -65,13 +65,14 @@ public interface ApplyInstanceService extends IService<ApplyInstance> {
      * @param status         审批状态
      * @return
      */
-    IPage<ApplyInstance> queryApprovalPage(Long pageNum, Long pageSize,
-                                           Long applyProcessId,
-                                           Long approvalUserId,
-                                           ApplyInstance.ApprovalStatus status);
+    IPage<ApplyInstance> queryPreapprovalPage(Long pageNum, Long pageSize,
+                                              Long applyProcessId,
+                                              Long approvalUserId,
+                                              ApplyInstance.ApprovalStatus status);
 
     /**
      * 审批
+     *
      * @param dto 审批信息
      * @return 审批结果
      */
@@ -81,4 +82,18 @@ public interface ApplyInstanceService extends IService<ApplyInstance> {
      * 申请流正常结束
      */
     void endProcess(String processInstanceId);
+
+
+    /**
+     * 分页查询指定用户审批过的流程实例
+     *
+     * @param userId         指定用户id
+     * @param applyProcessId 申请类型
+     * @param beginDate      审批时间查询开始时间
+     * @param endDate        审批时间查询结束时间
+     * @param pageNum        页码
+     * @param pageSize       页宽
+     * @return 分页信息
+     */
+    IPage<ApplyInstance> queryApprovedPage(Long userId, Long pageNum, Long pageSize, Date beginDate, Date endDate, Long applyProcessId);
 }

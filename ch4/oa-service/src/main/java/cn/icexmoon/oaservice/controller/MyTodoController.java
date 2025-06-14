@@ -29,7 +29,7 @@ public class MyTodoController {
                                              @RequestParam Long pageSize,
                                              @RequestParam(required = false) Long applyProcessId,
                                              @RequestParam(required = false) ApplyInstance.ApprovalStatus status) {
-        IPage<ApplyInstance> pageData = applyInstanceService.queryApprovalPage(pageNum, pageSize,
+        IPage<ApplyInstance> pageData = applyInstanceService.queryPreapprovalPage(pageNum, pageSize,
                 applyProcessId, UserHolder.getUser().getId(), status);
         return Result.success(pageData);
     }
